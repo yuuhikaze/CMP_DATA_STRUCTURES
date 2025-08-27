@@ -68,16 +68,16 @@ public class SinglyLinkedList<E> {
         E element = this.head.getElement();
         this.head = this.head.getNext();
         this.size--;
-        // if(isEmpty()) this.tail = null; // by definition, this is not needed
+        if(isEmpty()) this.tail = null;
         return element;
         // GC automatically disposes the first node since it no longer is referenced
     }
 
-    private class Node<E> {
-        private E element;
-        private Node<E> next;
+    private class Node<I> {
+        private I element;
+        private Node<I> next;
 
-        public Node(E element, Node<E> next) {
+        public Node(I element, Node<I> next) {
             this.element = element;
             this.next = next;
         }
@@ -85,21 +85,21 @@ public class SinglyLinkedList<E> {
         /**
          * Returns next node
          */
-        public Node<E> getNext() {
+        public Node<I> getNext() {
             return this.next;
         }
 
         /**
          * Sets next node
          */
-        public void setNext(Node<E> next) {
+        public void setNext(Node<I> next) {
             this.next = next;
         }
 
         /**
          * Gets element/value of node
          */
-        public E getElement() {
+        public I getElement() {
             return this.element;
         }
     }

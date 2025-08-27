@@ -7,7 +7,7 @@ public class EI01_Main {
         Zebra zebra = new Zebra();
         Frog frog = new Frog();
         Horse horse = new Horse();
-        ZooController zoo = new ZooController();
+        ZooController<Object> zoo = new ZooController<Object>();
         zoo.addAnimalFirst(lion);
         zoo.addAnimalFirst(zebra);
         zoo.addAnimalLast(frog);

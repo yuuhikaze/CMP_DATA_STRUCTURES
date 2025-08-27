@@ -3,13 +3,13 @@ package com.yuuhikaze.ed202510.EI;
 import com.yuuhikaze.ed202510.TDA.SinglyLinkedList;
 
 class ZooController<E> {
-    SinglyLinkedList SSL;
+    SinglyLinkedList<Object> SSL;
 
     public ZooController() {
         this.SSL = new SinglyLinkedList<>();
     }
 
-    public SinglyLinkedList getSSL() {
+    public SinglyLinkedList<Object> getSSL() {
         return SSL;
     }
 
