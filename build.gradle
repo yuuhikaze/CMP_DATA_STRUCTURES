@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.yuuhikaze'
+version = '0.1.0'
+
+def _mainClass = 'com.yuuhikaze.ed202510.EI.EI01_Main'
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+application {
+    mainClass.set(_mainClass)
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': _mainClass
+        )
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
