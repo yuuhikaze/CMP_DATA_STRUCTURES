@@ -12,6 +12,6 @@ public class EI01_Main {
         zoo.addAnimalFirst(zebra);
         zoo.addAnimalLast(frog);
         zoo.addAnimalLast(horse);
-        System.out.println(zoo);
+        System.out.print(zoo);
     }
 }

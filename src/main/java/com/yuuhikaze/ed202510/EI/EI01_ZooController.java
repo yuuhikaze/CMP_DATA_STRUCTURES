@@ -23,15 +23,12 @@ class ZooController<E> {
     
     /**
      * List animals stored inside SSL collection
-     * 
-     * Quite the inefficient implementation must I say
      */
     @Override
     public String toString() {
-        var SSLClone = this.SSL;
         String result = "Welcome to anon's zoo, we have: \n";
-        while (!SSLClone.isEmpty()) {
-            result += SSLClone.removeFirst() + "\n";
+        for (var elem : SSL) {
+            result += elem;
         }
         return result;
     }

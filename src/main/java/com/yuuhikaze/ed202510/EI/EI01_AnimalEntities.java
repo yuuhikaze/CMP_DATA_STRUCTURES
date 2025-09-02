@@ -4,7 +4,7 @@ class Lion {
 
     @Override
     public String toString() {
-        return "Grr, I'm a lion";
+        return "Grr, I'm a lion\n";
     }
 }
 
@@ -12,7 +12,7 @@ class Zebra {
 
     @Override
     public String toString() {
-        return "*Zebra noises*";
+        return "*Zebra noises*\n";
     }
 }
 
@@ -20,7 +20,7 @@ class Frog {
 
     @Override
     public String toString() {
-        return "Ribbit";
+        return "Ribbit\n";
     }
 }
 
@@ -28,6 +28,6 @@ class Horse {
 
     @Override
     public String toString() {
-        return "I move in L";
+        return "I move in L\n";
     }
 }

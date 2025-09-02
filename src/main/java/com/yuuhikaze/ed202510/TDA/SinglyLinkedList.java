@@ -1,18 +1,25 @@
 package com.yuuhikaze.ed202510.TDA;
 
-public class SinglyLinkedList<E> {
-    private Node<E> head = null;
-    private Node<E> tail = null;
-    private int size = 0;
+import java.util.Iterator;
 
-    public SinglyLinkedList() { }
+public class SinglyLinkedList<E> implements Iterable<E> {
+    private Node<E> head;
+    private Node<E> tail;
+    private int size;
+
+    public SinglyLinkedList() {
+        this.head = null;
+        this.tail = null;
+        this.size = 0;
+    }
 
     /**
      * Inserts an element to the start of the Singly Linked List
      */
     public void addFirst(E element) {
         this.head = new Node<>(element, this.head);
-        if (isEmpty()) this.tail = this.head;
+        if (isEmpty())
+            this.tail = this.head;
         this.size++;
     }
 
@@ -48,7 +55,8 @@ public class SinglyLinkedList<E> {
      * Returns the first element
      */
     public E first() {
-        if (isEmpty()) return null;
+        if (isEmpty())
+            return null;
         return this.head.getElement();
     }
 
@@ -56,7 +64,8 @@ public class SinglyLinkedList<E> {
      * Returns the last element
      */
     public E last() {
-        if (isEmpty()) return null;
+        if (isEmpty())
+            return null;
         return this.tail.getElement();
     }
 
@@ -64,13 +73,37 @@ public class SinglyLinkedList<E> {
      * Removes and returns the first element from the collection
      */
     public E removeFirst() {
-        if(isEmpty()) return null;
+        if (isEmpty())
+            return null;
         E element = this.head.getElement();
         this.head = this.head.getNext();
         this.size--;
-        if(isEmpty()) this.tail = null;
+        if (isEmpty())
+            this.tail = null;
         return element;
         // GC automatically disposes the first node since it no longer is referenced
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+            private Node<E> current = head;
+
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public E next() {
+                if (current == null) {
+                    throw new java.util.NoSuchElementException();
+                }
+                E data = current.getElement();
+                current = current.getNext();
+                return data;
+            }
+        };
     }
 
     private class Node<I> {

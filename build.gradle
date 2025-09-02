@@ -6,7 +6,7 @@ plugins {
 group = 'com.yuuhikaze'
 version = '0.1.0'
 
-def _mainClass = 'com.yuuhikaze.ed202510.EI.EI01_Main'
+def _mainClass = 'com.yuuhikaze.ed202510.CP.CP01_EJ02'
 
 java {
     toolchain {
