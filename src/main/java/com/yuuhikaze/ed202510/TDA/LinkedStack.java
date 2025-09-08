@@ -5,19 +5,20 @@ import java.util.NoSuchElementException;
 /**
  * A stack implementation inheriting from SinglyLinkedList and implementing Stack interface.
  */
-public class LinkedStack<E> extends SinglyLinkedList<E> implements Stack<E> {
+public class LinkedStack<E> implements Stack<E> {
+    private final SinglyLinkedList<E> list = new SinglyLinkedList<>();
 
     @Override
     public void push(E element) {
-        addFirst(element);
+        list.addFirst(element);
     }
 
     @Override
     public E pop() {
-        if (isEmpty()) {
+        if (list.isEmpty()) {
             throw new NoSuchElementException("Stack is empty");
         }
-        return removeFirst();
+        return list.removeFirst();
     }
 
     @Override
@@ -25,6 +26,16 @@ public class LinkedStack<E> extends SinglyLinkedList<E> implements Stack<E> {
         if (isEmpty()) {
             throw new NoSuchElementException("Stack is empty");
         }
-        return first();
+        return list.first();
+    }
+
+    @Override
+    public int size() {
+        return this.list.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return list.isEmpty();
     }
 }

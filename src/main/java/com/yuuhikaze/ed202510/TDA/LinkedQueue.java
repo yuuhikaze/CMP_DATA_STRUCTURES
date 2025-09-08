@@ -5,19 +5,20 @@ import java.util.NoSuchElementException;
 /**
  * A queue implementation inheriting from SinglyLinkedList and implementing Queue interface.
  */
-public class LinkedQueue<E> extends SinglyLinkedList<E> implements Queue<E> {
+public class LinkedQueue<E> implements Queue<E> {
+    private final SinglyLinkedList<E> list = new SinglyLinkedList<>();
 
     @Override
     public void enqueue(E element) {
-        addLast(element);
+        list.addLast(element);
     }
 
     @Override
     public E dequeue() {
-        if (isEmpty()) {
+        if (list.isEmpty()) {
             throw new NoSuchElementException("Queue is empty");
         }
-        return removeFirst();
+        return list.removeFirst();
     }
 
     @Override
@@ -25,6 +26,16 @@ public class LinkedQueue<E> extends SinglyLinkedList<E> implements Queue<E> {
         if (isEmpty()) {
             throw new NoSuchElementException("Queue is empty");
         }
-        return first();
+        return list.first();
+    }
+
+    @Override
+    public int size() {
+        return this.list.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.list.isEmpty();
     }
 }
