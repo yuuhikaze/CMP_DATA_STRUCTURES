@@ -42,7 +42,7 @@ class ReservationRequest {
 
 
 class Library {
-    // operate as stack =>
+    // operate as queue =>
     // insert at tail
     // remove from head
     private Map<Long, BookInstance> books;
