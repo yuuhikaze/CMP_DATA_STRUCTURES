@@ -1,6 +1,6 @@
 package com.yuuhikaze.ed202510.CP;
 
-import com.yuuhikaze.ed202510.TDA.LinkedQueue;
+import com.yuuhikaze.ed202510.TDA.SLLQueue;
 import com.yuuhikaze.ed202510.utils.ANSICodes;
 
 enum ClientType {
@@ -39,12 +39,12 @@ class Reservation {
 
 
 class ReservationSystem {
-    LinkedQueue<Reservation> peasants;
-    LinkedQueue<Reservation> landlords;
+    SLLQueue<Reservation> peasants;
+    SLLQueue<Reservation> landlords;
 
     public ReservationSystem() {
-        this.peasants = new LinkedQueue<>();
-        this.landlords = new LinkedQueue<>();
+        this.peasants = new SLLQueue<>();
+        this.landlords = new SLLQueue<>();
     }
 
     public void addReservation(Reservation reservation) {

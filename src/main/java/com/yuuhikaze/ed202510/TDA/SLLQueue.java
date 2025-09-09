@@ -1,11 +1,12 @@
 package com.yuuhikaze.ed202510.TDA;
 
 import java.util.NoSuchElementException;
+import com.yuuhikaze.ed202510.TDA.interfaces.Queue;
 
 /**
- * A queue implementation inheriting from SinglyLinkedList and implementing Queue interface.
+ * A queue implementation adapting SinglyLinkedList and implementing Queue interface.
  */
-public class LinkedQueue<E> implements Queue<E> {
+public class SLLQueue<E> implements Queue<E> {
     private final SinglyLinkedList<E> list = new SinglyLinkedList<>();
 
     @Override

@@ -1,12 +1,12 @@
 package com.yuuhikaze.ed202510.EI;
 
-import com.yuuhikaze.ed202510.TDA.LinkedStack;
+import com.yuuhikaze.ed202510.TDA.SLLStack;
 
 class TaskController {
-    private LinkedStack<TaskEntity> taskStack;
+    private SLLStack<TaskEntity> taskStack;
 
     public TaskController() {
-        this.taskStack = new LinkedStack<>();
+        this.taskStack = new SLLStack<>();
     }
 
     public void addTask(TaskEntity task) {
@@ -20,7 +20,7 @@ class TaskController {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("Tasks in stack:\n");
-        LinkedStack<TaskEntity> tempStack = new LinkedStack<>();
+        SLLStack<TaskEntity> tempStack = new SLLStack<>();
 
         while (!taskStack.isEmpty()) {
             TaskEntity task = taskStack.pop();

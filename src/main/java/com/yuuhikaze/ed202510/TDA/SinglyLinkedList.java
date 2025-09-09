@@ -3,6 +3,36 @@ package com.yuuhikaze.ed202510.TDA;
 import java.util.Iterator;
 
 public class SinglyLinkedList<E> implements Iterable<E> {
+    private class Node<I> {
+        private I element;
+        private Node<I> next;
+
+        public Node(I element, Node<I> next) {
+            this.element = element;
+            this.next = next;
+        }
+
+        /**
+         * Returns next node
+         */
+        public Node<I> getNext() {
+            return this.next;
+        }
+
+        /**
+         * Sets next node
+         */
+        public void setNext(Node<I> next) {
+            this.next = next;
+        }
+
+        /**
+         * Gets element/value of node
+         */
+        public I getElement() {
+            return this.element;
+        }
+    }
     private Node<E> head;
     private Node<E> tail;
     private int size;
@@ -104,36 +134,5 @@ public class SinglyLinkedList<E> implements Iterable<E> {
                 return data;
             }
         };
-    }
-
-    private class Node<I> {
-        private I element;
-        private Node<I> next;
-
-        public Node(I element, Node<I> next) {
-            this.element = element;
-            this.next = next;
-        }
-
-        /**
-         * Returns next node
-         */
-        public Node<I> getNext() {
-            return this.next;
-        }
-
-        /**
-         * Sets next node
-         */
-        public void setNext(Node<I> next) {
-            this.next = next;
-        }
-
-        /**
-         * Gets element/value of node
-         */
-        public I getElement() {
-            return this.element;
-        }
     }
 }

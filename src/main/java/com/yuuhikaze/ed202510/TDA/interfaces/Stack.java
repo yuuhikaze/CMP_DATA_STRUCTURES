@@ -1,4 +1,4 @@
-package com.yuuhikaze.ed202510.TDA;
+package com.yuuhikaze.ed202510.TDA.interfaces;
 
 /**
  * A generic Stack interface defining standard stack operations.

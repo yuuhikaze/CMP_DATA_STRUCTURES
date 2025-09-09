@@ -1,12 +1,12 @@
 package com.yuuhikaze.ed202510.EI;
 
-import com.yuuhikaze.ed202510.TDA.LinkedQueue;
+import com.yuuhikaze.ed202510.TDA.SLLQueue;
 
 class CustomerController {
-    private LinkedQueue<CustomerEntity> customerQueue;
+    private SLLQueue<CustomerEntity> customerQueue;
 
     public CustomerController() {
-        this.customerQueue = new LinkedQueue<>();
+        this.customerQueue = new SLLQueue<>();
     }
 
     public void addCustomer(CustomerEntity customer) {
@@ -20,7 +20,7 @@ class CustomerController {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("Customers in queue:\n");
-        LinkedQueue<CustomerEntity> tempQueue = new LinkedQueue<>();
+        SLLQueue<CustomerEntity> tempQueue = new SLLQueue<>();
 
         while (!customerQueue.isEmpty()) {
             CustomerEntity customer = customerQueue.dequeue();

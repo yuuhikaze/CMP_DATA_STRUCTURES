@@ -1,15 +1,13 @@
-package com.yuuhikaze.ed202510.TDA;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.NoSuchElementException;
 
-class LinkedQueueTest {
+class SSLQueueTest {
 
     @Test
     void testEnqueueDequeue() {
-        LinkedQueue<Integer> queue = new LinkedQueue<>();
+        SLLQueue<Integer> queue = new SLLQueue<>();
 
         // Test enqueue
         queue.enqueue(10);
@@ -28,7 +26,7 @@ class LinkedQueueTest {
 
     @Test
     void testDequeueFromEmptyQueue() {
-        LinkedQueue<Integer> queue = new LinkedQueue<>();
+        SLLQueue<Integer> queue = new SLLQueue<>();
 
         // Test dequeue on empty queue
         assertThrows(NoSuchElementException.class, queue::dequeue);
@@ -36,7 +34,7 @@ class LinkedQueueTest {
 
     @Test
     void testFirstOnEmptyQueue() {
-        LinkedQueue<Integer> queue = new LinkedQueue<>();
+        SLLQueue<Integer> queue = new SLLQueue<>();
 
         // Test first on empty queue
         assertThrows(NoSuchElementException.class, queue::first);

@@ -1,11 +1,12 @@
 package com.yuuhikaze.ed202510.TDA;
 
 import java.util.NoSuchElementException;
+import com.yuuhikaze.ed202510.TDA.interfaces.Stack;
 
 /**
- * A stack implementation inheriting from SinglyLinkedList and implementing Stack interface.
+ * A stack implementation adapting SinglyLinkedList and implementing Stack interface.
  */
-public class LinkedStack<E> implements Stack<E> {
+public class SLLStack<E> implements Stack<E> {
     private final SinglyLinkedList<E> list = new SinglyLinkedList<>();
 
     @Override

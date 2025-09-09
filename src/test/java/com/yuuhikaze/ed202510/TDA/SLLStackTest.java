@@ -1,15 +1,13 @@
-package com.yuuhikaze.ed202510.TDA;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.NoSuchElementException;
 
-class LinkedStackTest {
+class SSLStackTest {
 
     @Test
     void testPushPop() {
-        LinkedStack<Integer> stack = new LinkedStack<>();
+        SLLStack<Integer> stack = new SLLStack<>();
 
         // Test push
         stack.push(10);
@@ -28,7 +26,7 @@ class LinkedStackTest {
 
     @Test
     void testPopFromEmptyStack() {
-        LinkedStack<Integer> stack = new LinkedStack<>();
+        SLLStack<Integer> stack = new SLLStack<>();
 
         // Test pop on empty stack
         assertThrows(NoSuchElementException.class, stack::pop);
@@ -36,7 +34,7 @@ class LinkedStackTest {
 
     @Test
     void testTopOnEmptyStack() {
-        LinkedStack<Integer> stack = new LinkedStack<>();
+        SLLStack<Integer> stack = new SLLStack<>();
 
         // Test top on empty stack
         assertThrows(NoSuchElementException.class, stack::top);
