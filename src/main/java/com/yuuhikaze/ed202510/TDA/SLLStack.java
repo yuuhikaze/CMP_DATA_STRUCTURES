@@ -1,12 +1,13 @@
 package com.yuuhikaze.ed202510.TDA;
 
-import java.util.NoSuchElementException;
 import com.yuuhikaze.ed202510.TDA.interfaces.Stack;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * A stack implementation adapting SinglyLinkedList and implementing Stack interface.
  */
-public class SLLStack<E> implements Stack<E> {
+public class SLLStack<E> implements Stack<E>, Iterable<E> {
     private final SinglyLinkedList<E> list = new SinglyLinkedList<>();
 
     @Override
@@ -38,5 +39,10 @@ public class SLLStack<E> implements Stack<E> {
     @Override
     public boolean isEmpty() {
         return list.isEmpty();
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return list.iterator();
     }
 }

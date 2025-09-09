@@ -1,12 +1,13 @@
 package com.yuuhikaze.ed202510.TDA;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import com.yuuhikaze.ed202510.TDA.interfaces.Queue;
 
 /**
  * A queue implementation adapting SinglyLinkedList and implementing Queue interface.
  */
-public class SLLQueue<E> implements Queue<E> {
+public class SLLQueue<E> implements Queue<E>, Iterable<E> {
     private final SinglyLinkedList<E> list = new SinglyLinkedList<>();
 
     @Override
@@ -38,5 +39,10 @@ public class SLLQueue<E> implements Queue<E> {
     @Override
     public boolean isEmpty() {
         return this.list.isEmpty();
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return list.iterator();
     }
 }

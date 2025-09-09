@@ -20,19 +20,18 @@ class CustomerController {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("Customers in queue:\n");
-        SLLQueue<CustomerEntity> tempQueue = new SLLQueue<>();
-
-        while (!customerQueue.isEmpty()) {
-            CustomerEntity customer = customerQueue.dequeue();
-            result.append(customer).append("\n");
-            tempQueue.enqueue(customer);
+        boolean isFirst = true;
+        for (CustomerEntity customer : customerQueue) {
+            if (isFirst) {
+                result.append("[FRONT/FIRST] ").append(customer).append("\n");
+                isFirst = false;
+            } else {
+                result.append("              ").append(customer).append("\n");
+            }
         }
-
-        while (!tempQueue.isEmpty()) {
-            customerQueue.enqueue(tempQueue.dequeue());
+        if (isFirst) {
+            result.append("(Queue is empty)\n");
         }
-
         return result.toString();
     }
 }
-

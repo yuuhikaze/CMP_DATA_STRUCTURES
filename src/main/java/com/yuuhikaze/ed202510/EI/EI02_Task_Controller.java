@@ -20,19 +20,18 @@ class TaskController {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("Tasks in stack:\n");
-        SLLStack<TaskEntity> tempStack = new SLLStack<>();
-
-        while (!taskStack.isEmpty()) {
-            TaskEntity task = taskStack.pop();
-            result.append(task).append("\n");
-            tempStack.push(task);
+        boolean isTop = true;
+        for (TaskEntity task : taskStack) {
+            if (isTop) {
+                result.append("[TOP/LAST]  ").append(task).append("\n");
+                isTop = false;
+            } else {
+                result.append("            ").append(task).append("\n");
+            }
         }
-
-        while (!tempStack.isEmpty()) {
-            taskStack.push(tempStack.pop());
+        if (isTop) {
+            result.append("(Stack is empty)\n");
         }
-
         return result.toString();
     }
 }
-
