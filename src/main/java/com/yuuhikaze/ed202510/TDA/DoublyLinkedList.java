@@ -1,6 +1,8 @@
 package com.yuuhikaze.ed202510.TDA;
 
-public class DoublyLinkedList<E> {
+import java.util.Iterator;
+
+public class DoublyLinkedList<E> implements Iterable<E> {
     private class Node<I> {
         private E element;
         private Node<I> previous;
@@ -37,6 +39,12 @@ public class DoublyLinkedList<E> {
     private Node<E> trailer;
     private int size;
 
+    public DoublyLinkedList() {
+        this.header = new Node<E>(null, null, null);
+        this.trailer = new Node<E>(null, this.header, null);
+        this.header.setNext(this.trailer);
+    }
+
     private void addBetween(E element, Node<E> predecessor, Node<E> successor) {
         Node<E> node = new Node<>(element, predecessor, successor);
         predecessor.setNext(node);
@@ -63,22 +71,26 @@ public class DoublyLinkedList<E> {
     }
 
     public E removeFirst() {
-        if(isEmpty()) return null;
+        if (isEmpty())
+            return null;
         return remove(this.header.getNext());
     }
 
     public E removeLast() {
-        if(isEmpty()) return null;
+        if (isEmpty())
+            return null;
         return remove(this.trailer.getPrevious());
     }
 
     public E first() {
-        if(isEmpty()) return null;
+        if (isEmpty())
+            return null;
         return this.header.getNext().getElement();
     }
 
     public E last() {
-        if(isEmpty()) return null;
+        if (isEmpty())
+            return null;
         return this.trailer.getPrevious().getElement();
     }
 
@@ -88,5 +100,26 @@ public class DoublyLinkedList<E> {
 
     public boolean isEmpty() {
         return this.size == 0;
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+            private Node<E> current = header.getNext();
+
+            @Override
+            public boolean hasNext() {
+                return current != trailer;
+            }
+
+            @Override
+            public E next() {
+                if (!hasNext())
+                    throw new java.util.NoSuchElementException();
+                E element = current.getElement();
+                current = current.getNext();
+                return element;
+            }
+        };
     }
 }
