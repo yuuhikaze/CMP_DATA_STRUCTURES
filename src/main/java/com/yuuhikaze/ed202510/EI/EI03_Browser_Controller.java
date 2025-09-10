@@ -1,7 +1,7 @@
 package com.yuuhikaze.ed202510.EI;
 
 import com.yuuhikaze.ed202510.TDA.DoublyLinkedList;
-import java.util.Stack;
+import java.util.Iterator;
 
 class BrowserController<E> {
     private DoublyLinkedList<E> tabs;
@@ -22,23 +22,15 @@ class BrowserController<E> {
         tabs.removeLast();
     }
 
-    public void printTabsReversed() {
-        Stack<E> stack = new Stack<>();
-        for (E tab : tabs) {
-            stack.push(tab);
-        }
-
-        while (!stack.isEmpty()) {
-            System.out.print(stack.pop());
+    public void printTabs() {
+        for (var elem : this.tabs) {
+            System.out.print(elem);
         }
     }
 
-    @Override
-    public String toString() {
-        String result = "";
-        for (E tab : tabs) {
-            result += tab.toString();
+    public void printTabsReversed() {
+        for (Iterator<E> it = this.tabs.reverseIterator(); it.hasNext(); ) {
+            System.out.print(it.next());
         }
-        return result;
     }
 }

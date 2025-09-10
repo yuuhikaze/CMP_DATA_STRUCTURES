@@ -102,24 +102,36 @@ public class DoublyLinkedList<E> implements Iterable<E> {
         return this.size == 0;
     }
 
+    private class DLLIterator implements Iterator<E> {
+        private Node<E> current;
+        private final boolean reverse;
+
+        public DLLIterator(boolean reverse) {
+            this.reverse = reverse;
+            this.current = reverse ? trailer.getPrevious() : header.getNext();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return reverse ? current != header : current != trailer;
+        }
+
+        @Override
+        public E next() {
+            if (!hasNext())
+                throw new java.util.NoSuchElementException();
+            E element = current.getElement();
+            current = reverse ? current.getPrevious() : current.getNext();
+            return element;
+        }
+    }
+
     @Override
     public Iterator<E> iterator() {
-        return new Iterator<E>() {
-            private Node<E> current = header.getNext();
+        return new DLLIterator(false);
+    }
 
-            @Override
-            public boolean hasNext() {
-                return current != trailer;
-            }
-
-            @Override
-            public E next() {
-                if (!hasNext())
-                    throw new java.util.NoSuchElementException();
-                E element = current.getElement();
-                current = current.getNext();
-                return element;
-            }
-        };
+    public Iterator<E> reverseIterator() {
+        return new DLLIterator(true);
     }
 }

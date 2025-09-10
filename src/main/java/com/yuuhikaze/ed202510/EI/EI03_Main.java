@@ -14,9 +14,9 @@ public class EI03_Main {
         browser.openTab(tab4);
 
         System.out.println("All open tabs:");
-        System.out.println(browser);
+        browser.printTabs();
 
-        System.out.println("Closing last tab...");
+        System.out.println("\nClosing last tab...\n");
         browser.closeLastTab();
 
         System.out.println("Reversed tab view (most recent first):");
