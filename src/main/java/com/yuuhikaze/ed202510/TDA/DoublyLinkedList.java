@@ -62,6 +62,34 @@ public class DoublyLinkedList<E> implements Iterable<E> {
         return element;
     }
 
+    // removes given element O(n)
+    public E removeElement(E element) {
+        var currentNode = header;
+        E currentElement = null;
+        while (currentNode != null) {
+            currentNode = currentNode.getNext();
+            currentElement = currentNode.getElement();
+            if (currentElement == element) {
+                currentNode.getPrevious().setNext(currentNode.getNext());
+                currentNode.getNext().setPrevious(currentNode.getPrevious());
+            }
+        }
+        return currentElement;
+    }
+
+    // checks if given element exists O(n)
+    public boolean contains(E element) {
+        var currentNode = header;
+        boolean result = false;
+        while (currentNode != null) {
+            currentNode = currentNode.getNext();
+            if (currentNode.getElement() == element) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
     public void addFirst(E element) {
         addBetween(element, this.header, this.header.getNext());
     }
