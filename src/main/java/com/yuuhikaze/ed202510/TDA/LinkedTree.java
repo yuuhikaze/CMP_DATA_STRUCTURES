@@ -18,6 +18,8 @@ public class LinkedTree<E> extends AbstractTree<E> {
 
         @Override
         public E getElement() throws IllegalStateException {
+            if (children == null && parent != null && parent.equals(this))
+                throw new IllegalStateException("Position is defunct");
             return element;
         }
 
@@ -82,7 +84,7 @@ public class LinkedTree<E> extends AbstractTree<E> {
         if (!(position instanceof Node))
             throw new IllegalArgumentException("Position must be of Node type");
         Node<E> node = (Node<E>) position; // safe cast
-        if (node.getParent().equals(node)) // checks for defunct node
+        if (node.getParent() != null && node.getParent().equals(node)) // checks for defunct node
             throw new IllegalArgumentException("Position is no longer in the list");
         return node;
     }
@@ -101,6 +103,23 @@ public class LinkedTree<E> extends AbstractTree<E> {
     public Position<E> parent(Position<E> position) throws IllegalArgumentException {
         Node<E> node = validate(position);
         return node.getParent();
+    }
+
+    @Override
+    public Iterable<Position<E>> children(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        PositionalList<Node<E>> children = node.getChildren();
+        Vector<Position<E>> snapshot = new Vector<>(children.size());
+        for (Position<Node<E>> child : children) {
+            snapshot.add(child.getElement());
+        }
+        return snapshot;
+    }
+    
+    @Override
+    public int numChildren(Position<E> position) {
+        Node<E> node = validate(position);
+        return node.getChildren().size();
     }
 
     public Position<E> first(Position<E> position) throws IllegalArgumentException {
@@ -125,19 +144,19 @@ public class LinkedTree<E> extends AbstractTree<E> {
     // O(1)
     public Position<E> addFirst(Position<E> position, E element) throws IllegalArgumentException {
         Node<E> parent = validate(position);
-        Node<E> left = createNode(element, parent, null);
-        parent.addFirst(left);
+        Node<E> child = createNode(element, parent, new LinkedPositionalList<>());
+        parent.addFirst(child);
         this.size++;
-        return left;
+        return child;
     }
 
     // O(1)
     public Position<E> addLast(Position<E> position, E element) throws IllegalArgumentException {
         Node<E> parent = validate(position);
-        Node<E> left = createNode(element, parent, null);
-        parent.addLast(left);
+        Node<E> child = createNode(element, parent, new LinkedPositionalList<>());
+        parent.addLast(child);
         this.size++;
-        return left;
+        return child;
     }
 
     // O(1)
@@ -183,7 +202,7 @@ public class LinkedTree<E> extends AbstractTree<E> {
         Node<E> node = validate(position); // candidate for deletion
         if (numChildren(position) > 1)
             throw new IllegalArgumentException("Specified position has two children");
-        Node<E> child = node.getChildren().first() != null ? node.getChildren().first().getElement() : node.getChildren().last().getElement();
+        Node<E> child = node.getChildren().isEmpty() ? null : node.getChildren().first().getElement();
         if (child != null) {
             child.setParent(node.getParent());
         }
