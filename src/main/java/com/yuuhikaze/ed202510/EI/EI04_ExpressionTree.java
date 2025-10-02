@@ -27,6 +27,7 @@ class ExpressionNode {
     }
 }
 
+
 class ExpressionTreeController {
     private LinkedBinaryTree<ExpressionNode> tree;
     private Position<ExpressionNode> root;
@@ -38,22 +39,24 @@ class ExpressionTreeController {
     public void buildExpression() {
         // Build expression: ((3 + 5) * 2) - (8 / 4)
         root = tree.addRoot(new ExpressionNode("-", true));
-        
+
         Position<ExpressionNode> leftSubtree = tree.addLeft(root, new ExpressionNode("*", true));
         Position<ExpressionNode> rightSubtree = tree.addRight(root, new ExpressionNode("/", true));
-        
-        Position<ExpressionNode> leftLeft = tree.addLeft(leftSubtree, new ExpressionNode("+", true));
+
+        Position<ExpressionNode> leftLeft =
+                tree.addLeft(leftSubtree, new ExpressionNode("+", true));
         tree.addRight(leftSubtree, new ExpressionNode("2", false));
-        
+
         tree.addLeft(leftLeft, new ExpressionNode("3", false));
         tree.addRight(leftLeft, new ExpressionNode("5", false));
-        
+
         tree.addLeft(rightSubtree, new ExpressionNode("8", false));
         tree.addRight(rightSubtree, new ExpressionNode("4", false));
     }
 
     public void displayPreorder() {
-        System.out.println(ANSICodes.BOLD + "\n=== PREORDER TRAVERSAL (Prefix Notation) ===" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "\n=== PREORDER TRAVERSAL (Prefix Notation) ===" + ANSICodes.RESET);
         System.out.print("Expression: ");
         for (Position<ExpressionNode> pos : tree.preorder()) {
             System.out.print(pos.getElement() + " ");
@@ -62,17 +65,19 @@ class ExpressionTreeController {
     }
 
     public void displayInorder() {
-        System.out.println(ANSICodes.BOLD + "\n=== INORDER TRAVERSAL (Infix Notation) ===" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "\n=== INORDER TRAVERSAL (Infix Notation) ===" + ANSICodes.RESET);
         System.out.print("Expression: ");
         printInorderWithParentheses(root);
         System.out.println("\n");
     }
 
     private void printInorderWithParentheses(Position<ExpressionNode> pos) {
-        if (pos == null) return;
-        
+        if (pos == null)
+            return;
+
         ExpressionNode node = pos.getElement();
-        
+
         if (node.isOperator()) {
             System.out.print("(");
             printInorderWithParentheses(tree.left(pos));
@@ -85,7 +90,8 @@ class ExpressionTreeController {
     }
 
     public void displayPostorder() {
-        System.out.println(ANSICodes.BOLD + "\n=== POSTORDER TRAVERSAL (Postfix/RPN Notation) ===" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "\n=== POSTORDER TRAVERSAL (Postfix/RPN Notation) ===" + ANSICodes.RESET);
         System.out.print("Expression: ");
         for (Position<ExpressionNode> pos : tree.postorder()) {
             System.out.print(pos.getElement() + " ");
@@ -100,23 +106,29 @@ class ExpressionTreeController {
     }
 
     private double evaluateSubtree(Position<ExpressionNode> pos) {
-        if (pos == null) return 0;
-        
+        if (pos == null)
+            return 0;
+
         ExpressionNode node = pos.getElement();
-        
+
         if (!node.isOperator()) {
             return Double.parseDouble(node.getValue());
         }
-        
+
         double leftVal = evaluateSubtree(tree.left(pos));
         double rightVal = evaluateSubtree(tree.right(pos));
-        
+
         switch (node.getValue()) {
-            case "+": return leftVal + rightVal;
-            case "-": return leftVal - rightVal;
-            case "*": return leftVal * rightVal;
-            case "/": return leftVal / rightVal;
-            default: return 0;
+            case "+":
+                return leftVal + rightVal;
+            case "-":
+                return leftVal - rightVal;
+            case "*":
+                return leftVal * rightVal;
+            case "/":
+                return leftVal / rightVal;
+            default:
+                return 0;
         }
     }
 
@@ -126,13 +138,14 @@ class ExpressionTreeController {
     }
 
     private void printTree(Position<ExpressionNode> pos, String prefix, boolean isTail) {
-        if (pos == null) return;
-        
+        if (pos == null)
+            return;
+
         System.out.println(prefix + (isTail ? "└── " : "├── ") + pos.getElement());
-        
+
         Position<ExpressionNode> left = tree.left(pos);
         Position<ExpressionNode> right = tree.right(pos);
-        
+
         if (left != null) {
             printTree(left, prefix + (isTail ? "    " : "│   "), right == null);
         }
@@ -145,7 +158,7 @@ class ExpressionTreeController {
         System.out.println(ANSICodes.BOLD + "\n=== TREE STATISTICS ===" + ANSICodes.RESET);
         System.out.println("Total nodes: " + tree.size());
         System.out.println("Tree height: " + tree.height(root));
-        
+
         int operators = 0;
         int operands = 0;
         for (Position<ExpressionNode> pos : tree.preorder()) {
@@ -160,15 +173,19 @@ class ExpressionTreeController {
     }
 }
 
+
 public class EI04_ExpressionTree {
     public static void main(String[] args) {
-        System.out.println(ANSICodes.BOLD + "╔════════════════════════════════════════╗" + ANSICodes.RESET);
-        System.out.println(ANSICodes.BOLD + "║   ARITHMETIC EXPRESSION TREE EXAMPLE   ║" + ANSICodes.RESET);
-        System.out.println(ANSICodes.BOLD + "╚════════════════════════════════════════╝" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "╔════════════════════════════════════════╗" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "║   ARITHMETIC EXPRESSION TREE EXAMPLE   ║" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "╚════════════════════════════════════════╝" + ANSICodes.RESET);
 
         ExpressionTreeController controller = new ExpressionTreeController();
         controller.buildExpression();
-        
+
         controller.displayTreeStructure();
         controller.displayPreorder();
         controller.displayInorder();

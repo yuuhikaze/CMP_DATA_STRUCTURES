@@ -29,13 +29,18 @@ class Employee {
     }
 }
 
+
 class CompanyHierarchyController {
     private LinkedTree<Employee> hierarchy;
-    public Position<Employee> root;
+    private Position<Employee> root;
 
     public CompanyHierarchyController(Employee ceo) {
         this.hierarchy = new LinkedTree<>();
         this.root = hierarchy.addRoot(ceo);
+    }
+
+    public Position<Employee> getRoot() {
+        return root;
     }
 
     public Position<Employee> addEmployee(Position<Employee> manager, Employee employee) {
@@ -43,7 +48,8 @@ class CompanyHierarchyController {
     }
 
     public void displayPreorder() {
-        System.out.println(ANSICodes.BOLD + "\n=== PREORDER TRAVERSAL (Root → Children) ===" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "\n=== PREORDER TRAVERSAL (Root → Children) ===" + ANSICodes.RESET);
         System.out.println("Shows top-down hierarchy:\n");
         for (Position<Employee> pos : hierarchy.preorder()) {
             int depth = hierarchy.depth(pos);
@@ -52,7 +58,8 @@ class CompanyHierarchyController {
     }
 
     public void displayPostorder() {
-        System.out.println(ANSICodes.BOLD + "\n=== POSTORDER TRAVERSAL (Children → Root) ===" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "\n=== POSTORDER TRAVERSAL (Children → Root) ===" + ANSICodes.RESET);
         System.out.println("Shows bottom-up hierarchy (useful for processing leaves first):\n");
         int count = 0;
         for (Position<Employee> pos : hierarchy.postorder()) {
@@ -61,14 +68,16 @@ class CompanyHierarchyController {
     }
 
     public void displayBreadthFirst() {
-        System.out.println(ANSICodes.BOLD + "\n=== BREADTH-FIRST TRAVERSAL (Level by Level) ===" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "\n=== BREADTH-FIRST TRAVERSAL (Level by Level) ===" + ANSICodes.RESET);
         System.out.println("Shows organizational levels:\n");
         int level = 0;
         Position<Employee> prev = null;
         for (Position<Employee> pos : hierarchy.breadthFirst()) {
             int currentDepth = hierarchy.depth(pos);
             if (prev == null || hierarchy.depth(prev) != currentDepth) {
-                if (prev != null) System.out.println();
+                if (prev != null)
+                    System.out.println();
                 System.out.print("Level " + currentDepth + ": ");
             } else {
                 System.out.print(" | ");
@@ -87,27 +96,31 @@ class CompanyHierarchyController {
     }
 }
 
+
 public class EI04_CompanyTree {
     public static void main(String[] args) {
-        System.out.println(ANSICodes.BOLD + "╔══════════════════════════════════════╗" + ANSICodes.RESET);
-        System.out.println(ANSICodes.BOLD + "║   COMPANY ORGANIZATIONAL HIERARCHY   ║" + ANSICodes.RESET);
-        System.out.println(ANSICodes.BOLD + "╚══════════════════════════════════════╝" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "╔══════════════════════════════════════╗" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "║   COMPANY ORGANIZATIONAL HIERARCHY   ║" + ANSICodes.RESET);
+        System.out.println(
+                ANSICodes.BOLD + "╚══════════════════════════════════════╝" + ANSICodes.RESET);
 
         Employee ceo = new Employee("Alice Chen", "CEO", 1);
         CompanyHierarchyController company = new CompanyHierarchyController(ceo);
 
-        Position<Employee> ctoPos = company.addEmployee(company.root, 
-            new Employee("Bob Smith", "CTO", 2));
-        Position<Employee> cfoPos = company.addEmployee(company.root, 
-            new Employee("Carol Davis", "CFO", 3));
-        Position<Employee> cooPos = company.addEmployee(company.root, 
-            new Employee("David Lee", "COO", 4));
+        Position<Employee> ctoPos =
+                company.addEmployee(company.getRoot(), new Employee("Bob Smith", "CTO", 2));
+        Position<Employee> cfoPos =
+                company.addEmployee(company.getRoot(), new Employee("Carol Davis", "CFO", 3));
+        Position<Employee> cooPos =
+                company.addEmployee(company.getRoot(), new Employee("David Lee", "COO", 4));
 
         company.addEmployee(ctoPos, new Employee("Eve Wilson", "Engineering Manager", 5));
         company.addEmployee(ctoPos, new Employee("Frank Brown", "DevOps Lead", 6));
-        
-        Position<Employee> engManagerPos = company.addEmployee(ctoPos, 
-            new Employee("Grace Kim", "Senior Engineer", 7));
+
+        Position<Employee> engManagerPos =
+                company.addEmployee(ctoPos, new Employee("Grace Kim", "Senior Engineer", 7));
         company.addEmployee(engManagerPos, new Employee("Henry Zhang", "Junior Developer", 8));
         company.addEmployee(engManagerPos, new Employee("Iris Patel", "Junior Developer", 9));
 

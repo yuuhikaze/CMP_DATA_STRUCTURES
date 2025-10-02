@@ -45,7 +45,7 @@ public class AbstractBinaryTree<E> extends AbstractTree<E> implements BinaryTree
         if (left(position) != null)
             snapshot.add(left(position));
         if (right(position) != null)
-            snapshot.add(left(position));
+            snapshot.add(right(position));
         return snapshot;
     }
 
@@ -64,7 +64,7 @@ public class AbstractBinaryTree<E> extends AbstractTree<E> implements BinaryTree
         }
         snapshot.enqueue(position);
         try {
-            Position<E> right = left(position);
+            Position<E> right = right(position);
             inorderSubtree(right, snapshot);
         } catch (IllegalArgumentException e) {
         }

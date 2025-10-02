@@ -74,7 +74,7 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
         if (!(position instanceof Node))
             throw new IllegalArgumentException("Position must be of Node type");
         Node<E> node = (Node<E>) position; // safe cast
-        if (node.getParent() == null)
+        if (node.getParent() == node)
             throw new IllegalArgumentException("Position is no longer in the list");
         return node;
     }

@@ -5,6 +5,7 @@ public interface BinaryTree<E> extends Tree<E> {
     // O(n)
     /**
      * Returns the position of the left child from queried node
+     *
      * @param position is the node to query
      * @return position of the left child from queried node, or {@code null} if no child exists
      * @throws IllegalArgumentException TODO
@@ -14,6 +15,7 @@ public interface BinaryTree<E> extends Tree<E> {
     // O(n)
     /**
      * Returns the position of the right child from queried node
+     *
      * @param position is the node to query
      * @return position of the right child from queried node, or {@code null} if no child exists
      * @throws IllegalArgumentException TODO

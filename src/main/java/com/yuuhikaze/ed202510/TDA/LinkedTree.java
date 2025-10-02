@@ -34,7 +34,7 @@ public class LinkedTree<E> extends AbstractTree<E> {
         public void setParent(Node<E> parent) {
             this.parent = parent;
         }
-        
+
         public void cleanChildren() {
             this.children = null;
         }
@@ -115,7 +115,7 @@ public class LinkedTree<E> extends AbstractTree<E> {
         }
         return snapshot;
     }
-    
+
     @Override
     public int numChildren(Position<E> position) {
         Node<E> node = validate(position);
@@ -202,7 +202,8 @@ public class LinkedTree<E> extends AbstractTree<E> {
         Node<E> node = validate(position); // candidate for deletion
         if (numChildren(position) > 1)
             throw new IllegalArgumentException("Specified position has two children");
-        Node<E> child = node.getChildren().isEmpty() ? null : node.getChildren().first().getElement();
+        Node<E> child =
+                node.getChildren().isEmpty() ? null : node.getChildren().first().getElement();
         if (child != null) {
             child.setParent(node.getParent());
         }

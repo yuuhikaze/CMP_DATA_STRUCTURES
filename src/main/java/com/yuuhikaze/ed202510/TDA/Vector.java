@@ -1,7 +1,7 @@
 package com.yuuhikaze.ed202510.TDA;
 
-import java.util.Iterator;
 import com.yuuhikaze.ed202510.TDA.interfaces.List;
+import java.util.Iterator;
 
 public class Vector<E> implements List<E> {
 
@@ -56,7 +56,7 @@ public class Vector<E> implements List<E> {
         data[size] = element;
         this.size++;
     }
-    
+
     @SuppressWarnings("unchecked")
     private void resize(int capacity) {
         E[] tmp = (E[]) new Object[capacity];
@@ -78,20 +78,27 @@ public class Vector<E> implements List<E> {
     @Override
     public Iterator<E> iterator() {
         return new Iterator<E>() {
-            private int index = 0;
+            private int idx = 0;
 
             @Override
             public boolean hasNext() {
-                return index != size - 1;
+                return idx < size();
             }
 
             @Override
             public E next() {
-                E element = data[index];
-                this.index++;
-                return element;
+                if (!hasNext()) {
+                    throw new java.util.NoSuchElementException();
+                }
+                E elem = data[idx];
+                idx++;
+                return elem;
             }
-            
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
         };
     }
 }

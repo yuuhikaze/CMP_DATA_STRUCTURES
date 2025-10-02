@@ -1,8 +1,8 @@
 package com.yuuhikaze.ed202510.TDA;
 
-import java.util.Iterator;
 import com.yuuhikaze.ed202510.TDA.interfaces.Position;
 import com.yuuhikaze.ed202510.TDA.interfaces.PositionalList;
+import java.util.Iterator;
 
 public class LinkedPositionalList<E> implements PositionalList<E> {
 
@@ -176,16 +176,17 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
 
             @Override
             public boolean hasNext() {
-                return after(current) != null;
+                return current != null;
             }
 
             @Override
             public Position<E> next() {
+                if (current == null)
+                    throw new java.util.NoSuchElementException();
                 Position<E> tmp = current;
                 current = after(current);
                 return tmp;
             }
-            
         };
     }
 }
