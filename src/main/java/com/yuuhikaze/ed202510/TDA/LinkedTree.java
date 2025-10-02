@@ -1,20 +1,19 @@
 package com.yuuhikaze.ed202510.TDA;
 
 import com.yuuhikaze.ed202510.TDA.interfaces.Position;
+import com.yuuhikaze.ed202510.TDA.interfaces.PositionalList;
 
-public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
+public class LinkedTree<E> extends AbstractTree<E> {
 
     protected static class Node<E> implements Position<E> {
         private E element;
         private Node<E> parent;
-        private Node<E> left;
-        private Node<E> right;
+        private PositionalList<Node<E>> children;
 
-        public Node(E element, Node<E> parent, Node<E> left, Node<E> right) {
+        public Node(E element, Node<E> parent, PositionalList<Node<E>> children) {
             this.element = element;
             this.parent = parent;
-            this.left = left;
-            this.right = right;
+            this.children = children;
         }
 
         @Override
@@ -26,14 +25,6 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
             return parent;
         }
 
-        public Node<E> getLeft() {
-            return left;
-        }
-
-        public Node<E> getRight() {
-            return right;
-        }
-
         public void setElement(E element) {
             this.element = element;
         }
@@ -41,24 +32,41 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
         public void setParent(Node<E> parent) {
             this.parent = parent;
         }
-
-        public void setLeft(Node<E> left) {
-            this.left = left;
+        
+        public void cleanChildren() {
+            this.children = null;
         }
 
-        public void setRight(Node<E> right) {
-            this.right = right;
+        public void setChildNode(Node<E> newChild, Node<E> target) {
+            for (Position<Node<E>> position : children) {
+                if (position.getElement().equals(target)) {
+                    children.set(position, newChild);
+                    return;
+                }
+            }
+        }
+
+        public void addFirst(Node<E> node) {
+            children.addFirst(node);
+        }
+
+        public void addLast(Node<E> node) {
+            children.addLast(node);
+        }
+
+        public PositionalList<Node<E>> getChildren() {
+            return children;
         }
     }
 
-    protected Node<E> createNode(E element, Node<E> parent, Node<E> left, Node<E> right) {
-        return new Node<E>(element, parent, left, right);
+    protected Node<E> createNode(E element, Node<E> parent, PositionalList<Node<E>> children) {
+        return new Node<E>(element, parent, children);
     }
 
     protected Node<E> root;
     private int size;
 
-    public LinkedBinaryTree() {
+    public LinkedTree() {
         this.root = null;
         this.size = 0;
     }
@@ -74,7 +82,7 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
         if (!(position instanceof Node))
             throw new IllegalArgumentException("Position must be of Node type");
         Node<E> node = (Node<E>) position; // safe cast
-        if (node.getParent() == null)
+        if (node.getParent().equals(node)) // checks for defunct node
             throw new IllegalArgumentException("Position is no longer in the list");
         return node;
     }
@@ -95,47 +103,41 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
         return node.getParent();
     }
 
-    @Override
-    public Position<E> left(Position<E> position) throws IllegalArgumentException {
+    public Position<E> first(Position<E> position) throws IllegalArgumentException {
         Node<E> node = validate(position);
-        return node.getLeft();
+        return node.getChildren().first().getElement();
     }
 
-    @Override
-    public Position<E> right(Position<E> position) throws IllegalArgumentException {
+    public Position<E> last(Position<E> position) throws IllegalArgumentException {
         Node<E> node = validate(position);
-        return node.getRight();
+        return node.getChildren().last().getElement();
     }
 
     // O(1)
     public Position<E> addRoot(E element) throws IllegalStateException {
         if (!isEmpty())
             throw new IllegalStateException("Tree is not empty");
-        root = createNode(element, null, null, null);
+        root = createNode(element, null, new LinkedPositionalList<>());
         size = 1;
         return root;
     }
 
     // O(1)
-    public Position<E> addLeft(Position<E> position, E element) throws IllegalArgumentException {
+    public Position<E> addFirst(Position<E> position, E element) throws IllegalArgumentException {
         Node<E> parent = validate(position);
-        if (parent.getLeft() != null)
-            throw new IllegalArgumentException("Specified position already has a left child");
-        Node<E> left = createNode(element, parent, null, null);
-        parent.setLeft(left);
+        Node<E> left = createNode(element, parent, null);
+        parent.addFirst(left);
         this.size++;
         return left;
     }
 
     // O(1)
-    public Position<E> addRight(Position<E> position, E element) throws IllegalArgumentException {
+    public Position<E> addLast(Position<E> position, E element) throws IllegalArgumentException {
         Node<E> parent = validate(position);
-        if (parent.getRight() != null)
-            throw new IllegalArgumentException("Specified position already has a right child");
-        Node<E> right = createNode(element, parent, null, null);
-        parent.setRight(right);
+        Node<E> left = createNode(element, parent, null);
+        parent.addLast(left);
         this.size++;
-        return right;
+        return left;
     }
 
     // O(1)
@@ -147,55 +149,55 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
     }
 
     // O(1)
-    public void attach(
-            Position<E> position, LinkedBinaryTree<E> leftTree, LinkedBinaryTree<E> rightTree)
+    public void attachToLeft(Position<E> position, LinkedTree<E> tree)
             throws IllegalArgumentException {
         Node<E> node = validate(position);
         if (isInternal(position))
             throw new IllegalArgumentException("Specified position must be a leaf node");
-        size += leftTree.size() + rightTree.size();
-        if (!leftTree.isEmpty()) {
-            leftTree.root.setParent(node);
-            node.setLeft(leftTree.root);
-            leftTree.root = null;
-            leftTree.size = 0;
+        size += tree.size();
+        if (!tree.isEmpty()) {
+            tree.root.setParent(node);
+            node.addFirst(tree.root);
+            tree.root = null;
+            tree.size = 0;
         }
-        if (!rightTree.isEmpty()) {
-            rightTree.root.setParent(node);
-            node.setRight(rightTree.root);
-            rightTree.root = null;
-            rightTree.size = 0;
+    }
+
+    // O(1)
+    public void attachToRight(Position<E> position, LinkedTree<E> tree)
+            throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        if (isInternal(position))
+            throw new IllegalArgumentException("Specified position must be a leaf node");
+        size += tree.size();
+        if (!tree.isEmpty()) {
+            tree.root.setParent(node);
+            node.addLast(tree.root);
+            tree.root = null;
+            tree.size = 0;
         }
     }
 
     // O(1)
     public E remove(Position<E> position) throws IllegalArgumentException {
         Node<E> node = validate(position); // candidate for deletion
-        if (numChildren(position) == 2)
+        if (numChildren(position) > 1)
             throw new IllegalArgumentException("Specified position has two children");
-        Node<E> child = (node.getLeft() != null ? node.getLeft() : node.getRight());
+        Node<E> child = node.getChildren().first() != null ? node.getChildren().first().getElement() : node.getChildren().last().getElement();
         if (child != null) {
-            // Update the child's parent reference to the node above the candidate for deletion
             child.setParent(node.getParent());
         }
         if (node == root) {
             root = child; // if targeted node for deletion is root, its child becomes root
         } else {
             Node<E> parent = node.getParent();
-            // Update the relevant side
-            // Is the current candidate for deletion on the left or right?
-            if (node == parent.getLeft()) {
-                parent.setLeft(child);
-            } else {
-                parent.setRight(child);
-            }
+            parent.setChildNode(child, node);
         }
         this.size--;
         E tmp = node.getElement();
         // Free memory
         node.setElement(null);
-        node.setLeft(null);
-        node.setRight(null);
+        node.cleanChildren();
         node.setParent(node); // convention for defunct node - parent is set to himself
         return tmp;
     }

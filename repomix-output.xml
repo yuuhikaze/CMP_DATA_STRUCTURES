@@ -1,0 +1,5655 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+gradle/
+  wrapper/
+    gradle-wrapper.properties
+  libs.versions.toml
+reports/
+  CP/
+    CP01.html
+    CP02.html
+src/
+  main/
+    java/
+      com/
+        yuuhikaze/
+          ed202510/
+            CP/
+              CP01_EJ01.java
+              CP01_EJ02.java
+              CP01.md
+              CP02_EJ04.java
+              CP02.md
+              CP03_EJ01.java
+              CP04_EJ01.java
+              CP04_EJ02.java
+              CP04_EJ03.java
+            E/
+              E01.java
+            EI/
+              EI01_Animal_Entities.java
+              EI01_Main.java
+              EI01_Zoo_Controller.java
+              EI02_Customer_Controller.java
+              EI02_Customer_Entity.java
+              EI02_Customer_Main.java
+              EI02_Task_Controller.java
+              EI02_Task_Entity.java
+              EI02_Task_Main.java
+              EI03_Browser_Controller.java
+              EI03_Main.java
+              EI03_Tab_Entity.java
+            TDA/
+              helpers/
+                DefaultComparator.java
+              interfaces/
+                BinaryTree.java
+                Deque.java
+                Entry.java
+                List.java
+                Position.java
+                PositionalList.java
+                Queue.java
+                Stack.java
+                Tree.java
+              AbstractBinaryTree.java
+              AbstractTree.java
+              ArrayList.java
+              DLLDeque.java
+              DoublyLinkedList.java
+              LinkedBinaryTree.java
+              LinkedPositionalList.java
+              LinkedTree.java
+              SinglyLinkedList.java
+              SLLQueue.java
+              SLLStack.java
+              Vector.java
+            utils/
+              ANSICodes.java
+              ChecksumUtil.java
+              ScannerSingleton.java
+  test/
+    java/
+      com/
+        yuuhikaze/
+          ed202510/
+            TDA/
+              SLLQueueTest.java
+              SLLStackTest.java
+.gitattributes
+.gitignore
+build.gradle
+gradle.properties
+gradlew
+gradlew.bat
+settings.gradle
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/LinkedTree.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import com.yuuhikaze.ed202510.TDA.interfaces.Position;
+import com.yuuhikaze.ed202510.TDA.interfaces.PositionalList;
+
+public class LinkedTree<E> extends AbstractTree<E> {
+
+    protected static class Node<E> implements Position<E> {
+        private E element;
+        private Node<E> parent;
+        private PositionalList<Node<E>> children;
+
+        public Node(E element, Node<E> parent, PositionalList<Node<E>> children) {
+            this.element = element;
+            this.parent = parent;
+            this.children = children;
+        }
+
+        @Override
+        public E getElement() throws IllegalStateException {
+            return element;
+        }
+
+        public Node<E> getParent() {
+            return parent;
+        }
+
+        public void setElement(E element) {
+            this.element = element;
+        }
+
+        public void setParent(Node<E> parent) {
+            this.parent = parent;
+        }
+        
+        public void cleanChildren() {
+            this.children = null;
+        }
+
+        public void setChildNode(Node<E> newChild, Node<E> target) {
+            for (Position<Node<E>> position : children) {
+                if (position.getElement().equals(target)) {
+                    children.set(position, newChild);
+                    return;
+                }
+            }
+        }
+
+        public void addFirst(Node<E> node) {
+            children.addFirst(node);
+        }
+
+        public void addLast(Node<E> node) {
+            children.addLast(node);
+        }
+
+        public PositionalList<Node<E>> getChildren() {
+            return children;
+        }
+    }
+
+    protected Node<E> createNode(E element, Node<E> parent, PositionalList<Node<E>> children) {
+        return new Node<E>(element, parent, children);
+    }
+
+    protected Node<E> root;
+    private int size;
+
+    public LinkedTree() {
+        this.root = null;
+        this.size = 0;
+    }
+
+    /**
+     * Validates position is in the list and that is of {@code Node} type
+     *
+     * @param position is the position to validate
+     * @return position casted as node
+     * @throws IllegalArgumentException when position fails the validation
+     */
+    private Node<E> validate(Position<E> position) throws IllegalArgumentException {
+        if (!(position instanceof Node))
+            throw new IllegalArgumentException("Position must be of Node type");
+        Node<E> node = (Node<E>) position; // safe cast
+        if (node.getParent().equals(node)) // checks for defunct node
+            throw new IllegalArgumentException("Position is no longer in the list");
+        return node;
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public Position<E> root() {
+        return root;
+    }
+
+    @Override
+    public Position<E> parent(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        return node.getParent();
+    }
+
+    public Position<E> first(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        return node.getChildren().first().getElement();
+    }
+
+    public Position<E> last(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        return node.getChildren().last().getElement();
+    }
+
+    // O(1)
+    public Position<E> addRoot(E element) throws IllegalStateException {
+        if (!isEmpty())
+            throw new IllegalStateException("Tree is not empty");
+        root = createNode(element, null, new LinkedPositionalList<>());
+        size = 1;
+        return root;
+    }
+
+    // O(1)
+    public Position<E> addFirst(Position<E> position, E element) throws IllegalArgumentException {
+        Node<E> parent = validate(position);
+        Node<E> left = createNode(element, parent, null);
+        parent.addFirst(left);
+        this.size++;
+        return left;
+    }
+
+    // O(1)
+    public Position<E> addLast(Position<E> position, E element) throws IllegalArgumentException {
+        Node<E> parent = validate(position);
+        Node<E> left = createNode(element, parent, null);
+        parent.addLast(left);
+        this.size++;
+        return left;
+    }
+
+    // O(1)
+    public E set(Position<E> position, E element) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        E tmp = node.getElement();
+        node.setElement(element);
+        return tmp;
+    }
+
+    // O(1)
+    public void attachToLeft(Position<E> position, LinkedTree<E> tree)
+            throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        if (isInternal(position))
+            throw new IllegalArgumentException("Specified position must be a leaf node");
+        size += tree.size();
+        if (!tree.isEmpty()) {
+            tree.root.setParent(node);
+            node.addFirst(tree.root);
+            tree.root = null;
+            tree.size = 0;
+        }
+    }
+
+    // O(1)
+    public void attachToRight(Position<E> position, LinkedTree<E> tree)
+            throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        if (isInternal(position))
+            throw new IllegalArgumentException("Specified position must be a leaf node");
+        size += tree.size();
+        if (!tree.isEmpty()) {
+            tree.root.setParent(node);
+            node.addLast(tree.root);
+            tree.root = null;
+            tree.size = 0;
+        }
+    }
+
+    // O(1)
+    public E remove(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position); // candidate for deletion
+        if (numChildren(position) > 1)
+            throw new IllegalArgumentException("Specified position has two children");
+        Node<E> child = node.getChildren().first() != null ? node.getChildren().first().getElement() : node.getChildren().last().getElement();
+        if (child != null) {
+            child.setParent(node.getParent());
+        }
+        if (node == root) {
+            root = child; // if targeted node for deletion is root, its child becomes root
+        } else {
+            Node<E> parent = node.getParent();
+            parent.setChildNode(child, node);
+        }
+        this.size--;
+        E tmp = node.getElement();
+        // Free memory
+        node.setElement(null);
+        node.cleanChildren();
+        node.setParent(node); // convention for defunct node - parent is set to himself
+        return tmp;
+    }
+}
+</file>
+
+<file path="gradle/wrapper/gradle-wrapper.properties">
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.14.3-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+</file>
+
+<file path="gradle/libs.versions.toml">
+# This file was generated by the Gradle 'init' task.
+# https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
+</file>
+
+<file path="reports/CP/CP01.html">
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="generator" content="pandoc" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+                   <title>CP01</title>
+        <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+</style>
+                <style type="text/css">
+
+
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+display: block;
+}
+
+audio,
+canvas,
+video {
+display: inline-block;
+}
+
+audio:not([controls]) {
+display: none;
+height: 0;
+}
+
+[hidden],
+template {
+display: none;
+}
+
+
+html {
+font-family: sans-serif;
+
+-ms-text-size-adjust: 100%;
+
+-webkit-text-size-adjust: 100%;
+
+}
+
+body {
+margin: 0;
+}
+
+
+a {
+background: transparent;
+}
+
+a:focus {
+outline: thin dotted;
+}
+
+a:active,
+a:hover {
+outline: 0;
+}
+
+
+h1 {
+font-size: 2em;
+margin: 0.67em 0;
+}
+
+abbr[title] {
+border-bottom: 1px dotted;
+}
+
+b,
+strong {
+font-weight: bold;
+}
+
+dfn {
+font-style: italic;
+}
+
+hr {
+-moz-box-sizing: content-box;
+box-sizing: content-box;
+height: 0;
+}
+
+mark {
+background: #ff0;
+color: #000;
+}
+
+code,
+kbd,
+pre,
+samp {
+font-family: monospace, serif;
+font-size: 1em;
+}
+
+pre {
+white-space: pre-wrap;
+}
+
+q {
+quotes: "\201C" "\201D" "\2018" "\2019";
+}
+
+small {
+font-size: 80%;
+}
+
+sub,
+sup {
+font-size: 75%;
+line-height: 0;
+position: relative;
+vertical-align: baseline;
+}
+sup {
+top: -0.5em;
+}
+sub {
+bottom: -0.25em;
+}
+
+
+img {
+border: 0;
+}
+
+svg:not(:root) {
+overflow: hidden;
+}
+
+
+figure {
+margin: 0;
+}
+
+
+fieldset {
+border: 1px solid #c0c0c0;
+margin: 0 2px;
+padding: 0.35em 0.625em 0.75em;
+}
+
+legend {
+border: 0;
+
+padding: 0;
+
+}
+
+button,
+input,
+select,
+textarea {
+font-family: inherit;
+
+font-size: 100%;
+
+margin: 0;
+
+}
+
+button,
+input {
+line-height: normal;
+}
+
+button,
+select {
+text-transform: none;
+}
+
+button,
+html input[type="button"],
+
+input[type="reset"],
+input[type="submit"] {
+-webkit-appearance: button;
+
+cursor: pointer;
+
+}
+
+button[disabled],
+html input[disabled] {
+cursor: default;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+box-sizing: border-box;
+
+padding: 0;
+
+}
+
+input[type="search"] {
+-webkit-appearance: textfield;
+
+-moz-box-sizing: content-box;
+-webkit-box-sizing: content-box;
+
+box-sizing: content-box;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+-webkit-appearance: none;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+border: 0;
+padding: 0;
+}
+
+textarea {
+overflow: auto;
+
+vertical-align: top;
+
+}
+
+
+table {
+border-collapse: collapse;
+border-spacing: 0;
+}
+.go-top {
+position: fixed;
+bottom: 2em;
+right: 2em;
+text-decoration: none;
+background-color: #E0E0E0;
+font-size: 12px;
+padding: 1em;
+display: inline;
+}
+
+html,
+body {
+margin: auto;
+padding-right: 1em;
+padding-left: 1em;
+max-width: 85%;
+color: black;
+}
+*:not('#mkdbuttons') {
+margin: 0;
+padding: 0
+}
+body {
+font: 13.34px helvetica, arial, freesans, clean, sans-serif;
+-webkit-font-smoothing: subpixel-antialiased;
+line-height: 1.4;
+padding: 3px;
+background: #fff;
+border-radius: 3px;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px
+}
+p {
+margin: 1em 0
+}
+a {
+color: #4183c4;
+text-decoration: none
+}
+body {
+background-color: #fff;
+padding: 30px;
+margin: 15px;
+font-size: 14px;
+line-height: 1.6
+}
+body>*:first-child {
+margin-top: 0 !important
+}
+body>*:last-child {
+margin-bottom: 0 !important
+}
+@media screen {}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+margin: 20px 0 10px;
+padding: 0;
+font-weight: bold;
+-webkit-font-smoothing: subpixel-antialiased;
+cursor: text
+}
+h1 {
+font-size: 28px;
+color: #000
+}
+h2 {
+font-size: 24px;
+border-bottom: 1px solid #ccc;
+color: #000
+}
+h3 {
+font-size: 18px;
+}
+h4 {
+font-size: 16px;
+}
+h5 {
+font-size: 14px;
+}
+h6 {
+color: #777;
+font-size: 14px
+}
+p,
+blockquote,
+table,
+pre {
+margin: 15px 0
+}
+ul {
+padding-left: 30px
+}
+ol {
+padding-left: 30px
+}
+ol li ul:first-of-type {
+margin-top: 0
+}
+hr {
+background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC) repeat-x 0 0;
+border: 0 none;
+color: #ccc;
+height: 4px;
+padding: 0
+}
+body>h2:first-child {
+margin-top: 0;
+padding-top: 0
+}
+body>h1:first-child {
+margin-top: 0;
+padding-top: 0
+}
+body>h1:first-child+h2 {
+margin-top: 0;
+padding-top: 0
+}
+body>h3:first-child,
+body>h4:first-child,
+body>h5:first-child,
+body>h6:first-child {
+margin-top: 0;
+padding-top: 0
+}
+a:first-child h1,
+a:first-child h2,
+a:first-child h3,
+a:first-child h4,
+a:first-child h5,
+a:first-child h6 {
+margin-top: 0;
+padding-top: 0
+}
+h1+p,
+h2+p,
+h3+p,
+h4+p,
+h5+p,
+h6+p,
+ul li>:first-child,
+ol li>:first-child {
+margin-top: 0
+}
+dl {
+padding: 0
+}
+dl dt {
+font-size: 14px;
+font-weight: bold;
+font-style: italic;
+padding: 0;
+margin: 15px 0 5px
+}
+dl dt:first-child {
+padding: 0
+}
+dl dt>:first-child {
+margin-top: 0
+}
+dl dt>:last-child {
+margin-bottom: 0
+}
+dl dd {
+margin: 0 0 15px;
+padding: 0 15px
+}
+dl dd>:first-child {
+margin-top: 0
+}
+dl dd>:last-child {
+margin-bottom: 0
+}
+blockquote {
+border-left: 4px solid #DDD;
+padding: 0 15px;
+color: #777
+}
+blockquote>:first-child {
+margin-top: 0
+}
+blockquote>:last-child {
+margin-bottom: 0
+}
+table {
+border-collapse: collapse;
+border-spacing: 0;
+font-size: 100%;
+font: inherit
+}
+table th {
+font-weight: bold;
+border: 1px solid #ccc;
+padding: 6px 13px
+}
+table td {
+border: 1px solid #ccc;
+padding: 6px 13px
+}
+table tr {
+border-top: 1px solid #ccc;
+background-color: #fff
+}
+table tr:nth-child(2n) {
+background-color: #f8f8f8
+}
+img {
+max-width: 100%
+}
+code,
+tt {
+margin: 0 2px;
+padding: 0 5px;
+white-space: nowrap;
+border: 1px solid #eaeaea;
+background-color: #f8f8f8;
+border-radius: 3px;
+font-family: Consolas, 'Liberation Mono', Courier, monospace;
+
+;
+color: #333
+}
+pre>code {
+margin: 0;
+padding: 0;
+white-space: pre;
+border: 0;
+background: transparent
+}
+.highlight pre {
+background-color: #f8f8f8;
+border: 1px solid #ccc;
+font-size: 13px;
+line-height: 19px;
+overflow: auto;
+padding: 6px 10px;
+border-radius: 3px
+}
+pre {
+background-color: #f8f8f8;
+border: 1px solid #ccc;
+font-size: 13px;
+line-height: 19px;
+overflow: auto;
+padding: 6px 10px;
+border-radius: 3px
+}
+pre code,
+pre tt {
+background-color: transparent;
+border: 0
+}
+.poetry pre {
+font-family: Georgia, Garamond, serif !important;
+font-style: italic;
+font-size: 110% !important;
+line-height: 1.6em;
+display: block;
+margin-left: 1em
+}
+.poetry pre code {
+font-family: Georgia, Garamond, serif !important;
+word-break: break-all;
+word-break: break-word;
+-webkit-hyphens: auto;
+-moz-hyphens: auto;
+hyphens: auto;
+white-space: pre-wrap
+}
+sup,
+sub,
+a.footnote {
+font-size: 1.4ex;
+height: 0;
+line-height: 1;
+vertical-align: super;
+position: relative
+}
+sub {
+vertical-align: sub;
+top: -1px
+}
+@media print {
+body {
+background: #fff
+}
+img,
+pre,
+blockquote,
+table,
+figure {
+page-break-inside: avoid
+}
+body {
+background: #fff;
+border: 0
+}
+code {
+background-color: #fff;
+color: #333 !important;
+padding: 0 .2em;
+border: 1px solid #dedede
+}
+pre {
+background: #fff
+}
+pre code {
+background-color: white !important;
+overflow: visible
+}
+}
+@media screen {
+body.inverted {
+color: #eee !important;
+border-color: #555;
+box-shadow: none
+}
+.inverted body,
+.inverted hr .inverted p,
+.inverted td,
+.inverted li,
+.inverted h1,
+.inverted h2,
+.inverted h3,
+.inverted h4,
+.inverted h5,
+.inverted h6,
+.inverted th,
+.inverted .math,
+.inverted caption,
+.inverted dd,
+.inverted dt,
+.inverted blockquote {
+color: #eee !important;
+border-color: #555;
+box-shadow: none
+}
+.inverted td,
+.inverted th {
+background: #333
+}
+.inverted h2 {
+border-color: #555
+}
+.inverted hr {
+border-color: #777;
+border-width: 1px !important
+}
+::selection {
+background: rgba(157, 193, 200, 0.5)
+}
+h1::selection {
+background-color: rgba(45, 156, 208, 0.3)
+}
+h2::selection {
+background-color: rgba(90, 182, 224, 0.3)
+}
+h3::selection,
+h4::selection,
+h5::selection,
+h6::selection,
+li::selection,
+ol::selection {
+background-color: rgba(133, 201, 232, 0.3)
+}
+code::selection {
+background-color: rgba(0, 0, 0, 0.7);
+color: #eee
+}
+code span::selection {
+background-color: rgba(0, 0, 0, 0.7) !important;
+color: #eee !important
+}
+a::selection {
+background-color: rgba(255, 230, 102, 0.2)
+}
+.inverted a::selection {
+background-color: rgba(255, 230, 102, 0.6)
+}
+td::selection,
+th::selection,
+caption::selection {
+background-color: rgba(180, 237, 95, 0.5)
+}
+.inverted {
+background: #0b2531;
+background: #252a2a
+}
+.inverted body {
+background: #252a2a
+}
+.inverted a {
+color: #acd1d5
+}
+}
+.highlight .c {
+color: #998;
+font-style: italic
+}
+.highlight .err {
+color: #a61717;
+background-color: #e3d2d2
+}
+.highlight .k,
+.highlight .o {
+font-weight: bold
+}
+.highlight .cm {
+color: #998;
+font-style: italic
+}
+.highlight .cp {
+color: #999;
+font-weight: bold
+}
+.highlight .c1 {
+color: #998;
+font-style: italic
+}
+.highlight .cs {
+color: #999;
+font-weight: bold;
+font-style: italic
+}
+.highlight .gd {
+color: #000;
+background-color: #fdd
+}
+.highlight .gd .x {
+color: #000;
+background-color: #faa
+}
+.highlight .ge {
+font-style: italic
+}
+.highlight .gr {
+color: #a00
+}
+.highlight .gh {
+color: #999
+}
+.highlight .gi {
+color: #000;
+background-color: #dfd
+}
+.highlight .gi .x {
+color: #000;
+background-color: #afa
+}
+.highlight .go {
+color: #888
+}
+.highlight .gp {
+color: #555
+}
+.highlight .gs {
+font-weight: bold
+}
+.highlight .gu {
+color: #800080;
+font-weight: bold
+}
+.highlight .gt {
+color: #a00
+}
+.highlight .kc,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp,
+.highlight .kr {
+font-weight: bold
+}
+.highlight .kt {
+color: #458;
+font-weight: bold
+}
+.highlight .m {
+color: #099
+}
+.highlight .s {
+color: #d14
+}
+.highlight .na {
+color: #008080
+}
+.highlight .nb {
+color: #0086b3
+}
+.highlight .nc {
+color: #458;
+font-weight: bold
+}
+.highlight .no {
+color: #008080
+}
+.highlight .ni {
+color: #800080
+}
+.highlight .ne,
+.highlight .nf {
+color: #900;
+font-weight: bold
+}
+.highlight .nn {
+color: #555
+}
+.highlight .nt {
+color: #000080
+}
+.highlight .nv {
+color: #008080
+}
+.highlight .ow {
+font-weight: bold
+}
+.highlight .w {
+color: #bbb
+}
+.highlight .mf,
+.highlight .mh,
+.highlight .mi,
+.highlight .mo {
+color: #099
+}
+.highlight .sb,
+.highlight .sc,
+.highlight .sd,
+.highlight .s2,
+.highlight .se,
+.highlight .sh,
+.highlight .si,
+.highlight .sx {
+color: #d14
+}
+.highlight .sr {
+color: #009926
+}
+.highlight .s1 {
+color: #d14
+}
+.highlight .ss {
+color: #990073
+}
+.highlight .bp {
+color: #999
+}
+.highlight .vc,
+.highlight .vg,
+.highlight .vi {
+color: #008080
+}
+.highlight .il {
+color: #099
+}
+.highlight .gc {
+color: #999;
+background-color: #eaf2f5
+}
+.type-csharp .highlight .k,
+.type-csharp .highlight .kt {
+color: #00F
+}
+.type-csharp .highlight .nf {
+color: #000;
+font-weight: normal
+}
+.type-csharp .highlight .nc {
+color: #2b91af
+}
+.type-csharp .highlight .nn {
+color: #000
+}
+.type-csharp .highlight .s,
+.type-csharp .highlight .sc {
+color: #a31515
+}
+#title-block-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 5px;
+
+border-bottom: 1px solid #ddd;
+}
+#title-block-header .left {
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+}
+#title-block-header .right {
+display: flex;
+flex-direction: column;
+align-items: flex-end;
+}
+h1.title {
+font-size: 20px;
+margin: 0;
+color: #777777;
+}
+p.subtitle,
+p.author,
+p.date {
+margin: 0;
+font-size: 14px;
+color: #777777;
+}
+a tt,
+a code {
+color: #4183c4;
+}
+details {
+margin-bottom: 1.5em;
+background-color: #f9f9f9;
+border-bottom: 1px solid #ddd;
+border-radius: 2px;
+}
+details summary {
+padding: 2px 15px;
+cursor: pointer;
+font-family: Arial, Helvetica, sans-serif;
+font-weight: 500;
+color: #444;
+position: relative;
+display: block;
+background-color: #f9f9f9;
+}
+details summary::after {
+content: "+";
+position: absolute;
+right: 15px;
+top: 50%;
+transform: translateY(-50%);
+font-size: 18px;
+color: #666;
+transition: transform 0.2s;
+}
+details[open] summary::after {
+content: "−";
+}
+</style>
+         
+        <script data-external="1" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+    </head>
+    <body>
+                  <nav id="TOC" role="doc-toc">
+             <ul>
+<li><a href="#theoretical-exercises" id="toc-theoretical-exercises">Theoretical exercises</a>
+<ul>
+<li><a href="#r-4.8" id="toc-r-4.8">R-4.8</a></li>
+<li><a href="#r-4.9" id="toc-r-4.9">R-4.9</a></li>
+<li><a href="#r-4.10" id="toc-r-4.10">R-4.10</a></li>
+<li><a href="#r-4.11" id="toc-r-4.11">R-4.11</a></li>
+<li><a href="#r-4.12" id="toc-r-4.12">R-4.12</a></li>
+<li><a href="#r-4.13" id="toc-r-4.13">R-4.13</a></li>
+</ul></li>
+</ul>
+        </nav>
+         <h1 id="theoretical-exercises">Theoretical exercises</h1>
+<h3 id="r-4.8">R-4.8</h3>
+<p>Ordered list of functions by asymptotic growth rate</p>
+<table>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Big-O</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(2^{10}\)</span></td>
+<td><span class="math inline">\(\mathcal{O}(1)\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(2^{\log_2 n}\)</span></td>
+<td><span class="math inline">\(\mathcal{O}(n)\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(4n\)</span></td>
+<td><span class="math inline">\(\mathcal{O}(n)\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(3n+100\log n\)</span></td>
+<td><span class="math inline">\(\mathcal{O}(n)\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(n\log n\)</span></td>
+<td><span class="math inline">\(\mathcal{O}(n\log n)\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(4n\log n + 2n\)</span></td>
+<td><span class="math inline">\(\mathcal{O}(n\log n)\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(n^2+10n\)</span></td>
+<td><span class="math inline">\(\mathcal{O}(n^2)\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(n^3\)</span></td>
+<td><span class="math inline">\(\mathcal{O}(n^3)\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(2^n\)</span></td>
+<td><span class="math inline">\(\mathcal{O}(2^n)\)</span></td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-4.9">R-4.9</h3>
+<p><span class="math inline">\(\mathcal{O}(n)\)</span></p>
+<h3 id="r-4.10">R-4.10</h3>
+<p><span class="math inline">\(\mathcal{O}(n)\)</span></p>
+<h3 id="r-4.11">R-4.11</h3>
+<p><span class="math inline">\(\mathcal{O}(n^2)\)</span></p>
+<h3 id="r-4.12">R-4.12</h3>
+<p><span class="math inline">\(\mathcal{O}(n)\)</span></p>
+<h3 id="r-4.13">R-4.13</h3>
+<p><span class="math inline">\(\mathcal{O}(n^3)\)</span></p> 
+    </body>
+</html>
+</file>
+
+<file path="reports/CP/CP02.html">
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="generator" content="pandoc" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+                   <title>CP02</title>
+        <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+</style>
+                <style type="text/css">
+
+
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+display: block;
+}
+
+audio,
+canvas,
+video {
+display: inline-block;
+}
+
+audio:not([controls]) {
+display: none;
+height: 0;
+}
+
+[hidden],
+template {
+display: none;
+}
+
+
+html {
+font-family: sans-serif;
+
+-ms-text-size-adjust: 100%;
+
+-webkit-text-size-adjust: 100%;
+
+}
+
+body {
+margin: 0;
+}
+
+
+a {
+background: transparent;
+}
+
+a:focus {
+outline: thin dotted;
+}
+
+a:active,
+a:hover {
+outline: 0;
+}
+
+
+h1 {
+font-size: 2em;
+margin: 0.67em 0;
+}
+
+abbr[title] {
+border-bottom: 1px dotted;
+}
+
+b,
+strong {
+font-weight: bold;
+}
+
+dfn {
+font-style: italic;
+}
+
+hr {
+-moz-box-sizing: content-box;
+box-sizing: content-box;
+height: 0;
+}
+
+mark {
+background: #ff0;
+color: #000;
+}
+
+code,
+kbd,
+pre,
+samp {
+font-family: monospace, serif;
+font-size: 1em;
+}
+
+pre {
+white-space: pre-wrap;
+}
+
+q {
+quotes: "\201C" "\201D" "\2018" "\2019";
+}
+
+small {
+font-size: 80%;
+}
+
+sub,
+sup {
+font-size: 75%;
+line-height: 0;
+position: relative;
+vertical-align: baseline;
+}
+sup {
+top: -0.5em;
+}
+sub {
+bottom: -0.25em;
+}
+
+
+img {
+border: 0;
+}
+
+svg:not(:root) {
+overflow: hidden;
+}
+
+
+figure {
+margin: 0;
+}
+
+
+fieldset {
+border: 1px solid #c0c0c0;
+margin: 0 2px;
+padding: 0.35em 0.625em 0.75em;
+}
+
+legend {
+border: 0;
+
+padding: 0;
+
+}
+
+button,
+input,
+select,
+textarea {
+font-family: inherit;
+
+font-size: 100%;
+
+margin: 0;
+
+}
+
+button,
+input {
+line-height: normal;
+}
+
+button,
+select {
+text-transform: none;
+}
+
+button,
+html input[type="button"],
+
+input[type="reset"],
+input[type="submit"] {
+-webkit-appearance: button;
+
+cursor: pointer;
+
+}
+
+button[disabled],
+html input[disabled] {
+cursor: default;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+box-sizing: border-box;
+
+padding: 0;
+
+}
+
+input[type="search"] {
+-webkit-appearance: textfield;
+
+-moz-box-sizing: content-box;
+-webkit-box-sizing: content-box;
+
+box-sizing: content-box;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+-webkit-appearance: none;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+border: 0;
+padding: 0;
+}
+
+textarea {
+overflow: auto;
+
+vertical-align: top;
+
+}
+
+
+table {
+border-collapse: collapse;
+border-spacing: 0;
+}
+.go-top {
+position: fixed;
+bottom: 2em;
+right: 2em;
+text-decoration: none;
+background-color: #E0E0E0;
+font-size: 12px;
+padding: 1em;
+display: inline;
+}
+
+html,
+body {
+margin: auto;
+padding-right: 1em;
+padding-left: 1em;
+max-width: 85%;
+color: black;
+}
+*:not('#mkdbuttons') {
+margin: 0;
+padding: 0
+}
+body {
+font: 13.34px helvetica, arial, freesans, clean, sans-serif;
+-webkit-font-smoothing: subpixel-antialiased;
+line-height: 1.4;
+padding: 3px;
+background: #fff;
+border-radius: 3px;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px
+}
+p {
+margin: 1em 0
+}
+a {
+color: #4183c4;
+text-decoration: none
+}
+body {
+background-color: #fff;
+padding: 30px;
+margin: 15px;
+font-size: 14px;
+line-height: 1.6
+}
+body>*:first-child {
+margin-top: 0 !important
+}
+body>*:last-child {
+margin-bottom: 0 !important
+}
+@media screen {}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+margin: 20px 0 10px;
+padding: 0;
+font-weight: bold;
+-webkit-font-smoothing: subpixel-antialiased;
+cursor: text
+}
+h1 {
+font-size: 28px;
+color: #000
+}
+h2 {
+font-size: 24px;
+border-bottom: 1px solid #ccc;
+color: #000
+}
+h3 {
+font-size: 18px;
+}
+h4 {
+font-size: 16px;
+}
+h5 {
+font-size: 14px;
+}
+h6 {
+color: #777;
+font-size: 14px
+}
+p,
+blockquote,
+table,
+pre {
+margin: 15px 0
+}
+ul {
+padding-left: 30px
+}
+ol {
+padding-left: 30px
+}
+ol li ul:first-of-type {
+margin-top: 0
+}
+hr {
+background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC) repeat-x 0 0;
+border: 0 none;
+color: #ccc;
+height: 4px;
+padding: 0
+}
+body>h2:first-child {
+margin-top: 0;
+padding-top: 0
+}
+body>h1:first-child {
+margin-top: 0;
+padding-top: 0
+}
+body>h1:first-child+h2 {
+margin-top: 0;
+padding-top: 0
+}
+body>h3:first-child,
+body>h4:first-child,
+body>h5:first-child,
+body>h6:first-child {
+margin-top: 0;
+padding-top: 0
+}
+a:first-child h1,
+a:first-child h2,
+a:first-child h3,
+a:first-child h4,
+a:first-child h5,
+a:first-child h6 {
+margin-top: 0;
+padding-top: 0
+}
+h1+p,
+h2+p,
+h3+p,
+h4+p,
+h5+p,
+h6+p,
+ul li>:first-child,
+ol li>:first-child {
+margin-top: 0
+}
+dl {
+padding: 0
+}
+dl dt {
+font-size: 14px;
+font-weight: bold;
+font-style: italic;
+padding: 0;
+margin: 15px 0 5px
+}
+dl dt:first-child {
+padding: 0
+}
+dl dt>:first-child {
+margin-top: 0
+}
+dl dt>:last-child {
+margin-bottom: 0
+}
+dl dd {
+margin: 0 0 15px;
+padding: 0 15px
+}
+dl dd>:first-child {
+margin-top: 0
+}
+dl dd>:last-child {
+margin-bottom: 0
+}
+blockquote {
+border-left: 4px solid #DDD;
+padding: 0 15px;
+color: #777
+}
+blockquote>:first-child {
+margin-top: 0
+}
+blockquote>:last-child {
+margin-bottom: 0
+}
+table {
+border-collapse: collapse;
+border-spacing: 0;
+font-size: 100%;
+font: inherit
+}
+table th {
+font-weight: bold;
+border: 1px solid #ccc;
+padding: 6px 13px
+}
+table td {
+border: 1px solid #ccc;
+padding: 6px 13px
+}
+table tr {
+border-top: 1px solid #ccc;
+background-color: #fff
+}
+table tr:nth-child(2n) {
+background-color: #f8f8f8
+}
+img {
+max-width: 100%
+}
+code,
+tt {
+margin: 0 2px;
+padding: 0 5px;
+white-space: nowrap;
+border: 1px solid #eaeaea;
+background-color: #f8f8f8;
+border-radius: 3px;
+font-family: Consolas, 'Liberation Mono', Courier, monospace;
+
+;
+color: #333
+}
+pre>code {
+margin: 0;
+padding: 0;
+white-space: pre;
+border: 0;
+background: transparent
+}
+.highlight pre {
+background-color: #f8f8f8;
+border: 1px solid #ccc;
+font-size: 13px;
+line-height: 19px;
+overflow: auto;
+padding: 6px 10px;
+border-radius: 3px
+}
+pre {
+background-color: #f8f8f8;
+border: 1px solid #ccc;
+font-size: 13px;
+line-height: 19px;
+overflow: auto;
+padding: 6px 10px;
+border-radius: 3px
+}
+pre code,
+pre tt {
+background-color: transparent;
+border: 0
+}
+.poetry pre {
+font-family: Georgia, Garamond, serif !important;
+font-style: italic;
+font-size: 110% !important;
+line-height: 1.6em;
+display: block;
+margin-left: 1em
+}
+.poetry pre code {
+font-family: Georgia, Garamond, serif !important;
+word-break: break-all;
+word-break: break-word;
+-webkit-hyphens: auto;
+-moz-hyphens: auto;
+hyphens: auto;
+white-space: pre-wrap
+}
+sup,
+sub,
+a.footnote {
+font-size: 1.4ex;
+height: 0;
+line-height: 1;
+vertical-align: super;
+position: relative
+}
+sub {
+vertical-align: sub;
+top: -1px
+}
+@media print {
+body {
+background: #fff
+}
+img,
+pre,
+blockquote,
+table,
+figure {
+page-break-inside: avoid
+}
+body {
+background: #fff;
+border: 0
+}
+code {
+background-color: #fff;
+color: #333 !important;
+padding: 0 .2em;
+border: 1px solid #dedede
+}
+pre {
+background: #fff
+}
+pre code {
+background-color: white !important;
+overflow: visible
+}
+}
+@media screen {
+body.inverted {
+color: #eee !important;
+border-color: #555;
+box-shadow: none
+}
+.inverted body,
+.inverted hr .inverted p,
+.inverted td,
+.inverted li,
+.inverted h1,
+.inverted h2,
+.inverted h3,
+.inverted h4,
+.inverted h5,
+.inverted h6,
+.inverted th,
+.inverted .math,
+.inverted caption,
+.inverted dd,
+.inverted dt,
+.inverted blockquote {
+color: #eee !important;
+border-color: #555;
+box-shadow: none
+}
+.inverted td,
+.inverted th {
+background: #333
+}
+.inverted h2 {
+border-color: #555
+}
+.inverted hr {
+border-color: #777;
+border-width: 1px !important
+}
+::selection {
+background: rgba(157, 193, 200, 0.5)
+}
+h1::selection {
+background-color: rgba(45, 156, 208, 0.3)
+}
+h2::selection {
+background-color: rgba(90, 182, 224, 0.3)
+}
+h3::selection,
+h4::selection,
+h5::selection,
+h6::selection,
+li::selection,
+ol::selection {
+background-color: rgba(133, 201, 232, 0.3)
+}
+code::selection {
+background-color: rgba(0, 0, 0, 0.7);
+color: #eee
+}
+code span::selection {
+background-color: rgba(0, 0, 0, 0.7) !important;
+color: #eee !important
+}
+a::selection {
+background-color: rgba(255, 230, 102, 0.2)
+}
+.inverted a::selection {
+background-color: rgba(255, 230, 102, 0.6)
+}
+td::selection,
+th::selection,
+caption::selection {
+background-color: rgba(180, 237, 95, 0.5)
+}
+.inverted {
+background: #0b2531;
+background: #252a2a
+}
+.inverted body {
+background: #252a2a
+}
+.inverted a {
+color: #acd1d5
+}
+}
+.highlight .c {
+color: #998;
+font-style: italic
+}
+.highlight .err {
+color: #a61717;
+background-color: #e3d2d2
+}
+.highlight .k,
+.highlight .o {
+font-weight: bold
+}
+.highlight .cm {
+color: #998;
+font-style: italic
+}
+.highlight .cp {
+color: #999;
+font-weight: bold
+}
+.highlight .c1 {
+color: #998;
+font-style: italic
+}
+.highlight .cs {
+color: #999;
+font-weight: bold;
+font-style: italic
+}
+.highlight .gd {
+color: #000;
+background-color: #fdd
+}
+.highlight .gd .x {
+color: #000;
+background-color: #faa
+}
+.highlight .ge {
+font-style: italic
+}
+.highlight .gr {
+color: #a00
+}
+.highlight .gh {
+color: #999
+}
+.highlight .gi {
+color: #000;
+background-color: #dfd
+}
+.highlight .gi .x {
+color: #000;
+background-color: #afa
+}
+.highlight .go {
+color: #888
+}
+.highlight .gp {
+color: #555
+}
+.highlight .gs {
+font-weight: bold
+}
+.highlight .gu {
+color: #800080;
+font-weight: bold
+}
+.highlight .gt {
+color: #a00
+}
+.highlight .kc,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp,
+.highlight .kr {
+font-weight: bold
+}
+.highlight .kt {
+color: #458;
+font-weight: bold
+}
+.highlight .m {
+color: #099
+}
+.highlight .s {
+color: #d14
+}
+.highlight .na {
+color: #008080
+}
+.highlight .nb {
+color: #0086b3
+}
+.highlight .nc {
+color: #458;
+font-weight: bold
+}
+.highlight .no {
+color: #008080
+}
+.highlight .ni {
+color: #800080
+}
+.highlight .ne,
+.highlight .nf {
+color: #900;
+font-weight: bold
+}
+.highlight .nn {
+color: #555
+}
+.highlight .nt {
+color: #000080
+}
+.highlight .nv {
+color: #008080
+}
+.highlight .ow {
+font-weight: bold
+}
+.highlight .w {
+color: #bbb
+}
+.highlight .mf,
+.highlight .mh,
+.highlight .mi,
+.highlight .mo {
+color: #099
+}
+.highlight .sb,
+.highlight .sc,
+.highlight .sd,
+.highlight .s2,
+.highlight .se,
+.highlight .sh,
+.highlight .si,
+.highlight .sx {
+color: #d14
+}
+.highlight .sr {
+color: #009926
+}
+.highlight .s1 {
+color: #d14
+}
+.highlight .ss {
+color: #990073
+}
+.highlight .bp {
+color: #999
+}
+.highlight .vc,
+.highlight .vg,
+.highlight .vi {
+color: #008080
+}
+.highlight .il {
+color: #099
+}
+.highlight .gc {
+color: #999;
+background-color: #eaf2f5
+}
+.type-csharp .highlight .k,
+.type-csharp .highlight .kt {
+color: #00F
+}
+.type-csharp .highlight .nf {
+color: #000;
+font-weight: normal
+}
+.type-csharp .highlight .nc {
+color: #2b91af
+}
+.type-csharp .highlight .nn {
+color: #000
+}
+.type-csharp .highlight .s,
+.type-csharp .highlight .sc {
+color: #a31515
+}
+#title-block-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 5px;
+
+border-bottom: 1px solid #ddd;
+}
+#title-block-header .left {
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+}
+#title-block-header .right {
+display: flex;
+flex-direction: column;
+align-items: flex-end;
+}
+h1.title {
+font-size: 20px;
+margin: 0;
+color: #777777;
+}
+p.subtitle,
+p.author,
+p.date {
+margin: 0;
+font-size: 14px;
+color: #777777;
+}
+a tt,
+a code {
+color: #4183c4;
+}
+details {
+margin-bottom: 1.5em;
+background-color: #f9f9f9;
+border-bottom: 1px solid #ddd;
+border-radius: 2px;
+}
+details summary {
+padding: 2px 15px;
+cursor: pointer;
+font-family: Arial, Helvetica, sans-serif;
+font-weight: 500;
+color: #444;
+position: relative;
+display: block;
+background-color: #f9f9f9;
+}
+details summary::after {
+content: "+";
+position: absolute;
+right: 15px;
+top: 50%;
+transform: translateY(-50%);
+font-size: 18px;
+color: #666;
+transition: transform 0.2s;
+}
+details[open] summary::after {
+content: "−";
+}
+</style>
+         
+        <script data-external="1" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+    </head>
+    <body>
+                  <nav id="TOC" role="doc-toc">
+             <ul>
+<li><a href="#theoretical-exercises" id="toc-theoretical-exercises">Theoretical exercises</a>
+<ul>
+<li><a href="#suppose-an-initially-empty-stack-s-has-performed-a-total-of-25-push-operations-12-top-operations-and-10-pop-operations-3-of-which-returned-null-to-indicate-an-empty-stack.-what-is-the-current-size-of-s" id="toc-suppose-an-initially-empty-stack-s-has-performed-a-total-of-25-push-operations-12-top-operations-and-10-pop-operations-3-of-which-returned-null-to-indicate-an-empty-stack.-what-is-the-current-size-of-s">1.
+Suppose an initially empty stack S has performed a total of 25 push
+operations, 12 top operations, and 10 pop operations, 3 of which
+returned null to indicate an empty stack. What is the current size of
+S?</a></li>
+</ul></li>
+</ul>
+        </nav>
+         <h1 id="theoretical-exercises">Theoretical exercises</h1>
+<h3 id="suppose-an-initially-empty-stack-s-has-performed-a-total-of-25-push-operations-12-top-operations-and-10-pop-operations-3-of-which-returned-null-to-indicate-an-empty-stack.-what-is-the-current-size-of-s">1.
+Suppose an initially empty stack S has performed a total of 25 push
+operations, 12 top operations, and 10 pop operations, 3 of which
+returned null to indicate an empty stack. What is the current size of
+S?</h3>
+<p>Re: Size is 7</p> 
+    </body>
+</html>
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/CP/CP01_EJ01.java">
+package com.yuuhikaze.ed202510.CP;
+
+class Group {
+    private Student[] students;
+
+    public Group(Student[] students) {
+        this.students = students;
+    }
+
+    public float getAverage() {
+        float result = 0;
+        for (Student student : students)
+            result += student.getGrade();
+        return result / students.length;
+    }
+
+    public String getBestStudent() {
+        Student best_student = this.students[0];
+        float best_grade = best_student.getGrade();
+        for (int i = 1; i < this.students.length; i++) {
+            if (this.students[i].getGrade() > best_grade) {
+                best_grade = this.students[i].getGrade();
+                best_student = this.students[i];
+            }
+        }
+        return best_student.getName();
+    }
+}
+
+class Student {
+    private String name;
+
+    @SuppressWarnings("unused")
+    private int age;
+
+    private float grade;
+
+    public Student(String name, int age, float grade) {
+        this.name = name;
+        this.age = age;
+        this.grade = grade;
+    }
+
+    public float getGrade() {
+        return grade;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+public class CP01_EJ01 {
+
+    public static void main(String[] args) {
+        Student[] students = {
+                new Student("Alice", 20, 85.5f),
+                new Student("Bob", 22, 90.0f),
+                new Student("Charlie", 21, 78.0f) };
+        Group group = new Group(students);
+        System.out.println("Average grade: " + group.getAverage()); // O(n)
+        System.out.println("Best student: " + group.getBestStudent()); // O(n)
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/CP/CP01.md">
+# Theoretical exercises
+
+### R-4.8
+
+Ordered list of functions by asymptotic growth rate
+
+| Function        | Big-O                  |
+|-----------------|------------------------|
+| $2^{10}$        | $\mathcal{O}(1)$       |
+| $2^{\log_2 n}$  | $\mathcal{O}(n)$       |
+| $4n$            | $\mathcal{O}(n)$       |
+| $3n+100\log n$  | $\mathcal{O}(n)$       |
+| $n\log n$       | $\mathcal{O}(n\log n)$ |
+| $4n\log n + 2n$ | $\mathcal{O}(n\log n)$ |
+| $n^2+10n$       | $\mathcal{O}(n^2)$     |
+| $n^3$           | $\mathcal{O}(n^3)$     |
+| $2^n$           | $\mathcal{O}(2^n)$     |
+
+
+### R-4.9
+
+$\mathcal{O}(n)$
+
+### R-4.10
+
+$\mathcal{O}(n)$
+
+### R-4.11
+
+$\mathcal{O}(n^2)$
+
+### R-4.12
+
+$\mathcal{O}(n)$
+
+### R-4.13
+
+$\mathcal{O}(n^3)$
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/CP/CP02.md">
+# Theoretical exercises
+
+### 1. Suppose an initially empty stack S has performed a total of 25 push operations, 12 top operations, and 10 pop operations, 3 of which returned null to indicate an empty stack. What is the current size of S?
+
+Re: Size is 7
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/CP/CP03_EJ01.java">
+package com.yuuhikaze.ed202510.CP;
+
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import com.yuuhikaze.ed202510.TDA.DLLDeque;
+import com.yuuhikaze.ed202510.utils.ANSICodes;
+
+class Hospital {
+    private final String name;
+    private final String address;
+    private final int capacity;
+    private DLLDeque<Patient> patients;
+
+    public Hospital(String name, String address, int capacity) {
+        this.name = name;
+        this.address = address;
+        this.capacity = capacity;
+        this.patients = new DLLDeque<Patient>();
+    }
+
+    public void addPatient(Patient patient) {
+        patients.addFirst(patient);
+    }
+
+    public void attendPatients() {
+        Stream<Patient> stream = StreamSupport.stream(patients.spliterator(), false);
+        Stream<Patient> poleoPatients = stream.filter(p -> p.getIssueKind().equals(IssueKind.Poleo));
+        poleoPatients.forEach(patient -> {
+            System.out.println(patient);
+        });
+        Stream<Patient> cardiovascularPressurePatients = stream.filter(p -> p.getIssueKind().equals(IssueKind.CardiovascularPressure));
+        cardiovascularPressurePatients.forEach(patient -> {
+            System.out.println(patient);
+        });
+    }
+    
+    public void removePatient(Patient patient) {
+        if (patients.contains(patient))
+            return;
+        patients.removeElement(patient);
+    }
+}
+
+enum Gender {
+    Male,
+    Female
+}
+
+enum IssueKind {
+    Poleo,
+    CardiovascularPressure,
+    Default,
+}
+
+class Patient {
+    private final String name;
+    private final long ID;
+    private final int age;
+    private final Gender gender;
+    private final IssueKind issueKind;
+
+    public Patient(String name, long iD, int age, Gender gender) {
+        this.name = name;
+        ID = iD;
+        this.age = age;
+        this.gender = gender;
+        if (this.age <= 10) {
+            this.issueKind = IssueKind.Poleo;
+        } else if (this.age >= 60) {
+            this.issueKind = IssueKind.CardiovascularPressure;
+        } else {
+            this.issueKind = IssueKind.Default;
+        }
+    }
+
+    public IssueKind getIssueKind() {
+        return issueKind;
+    }
+
+    @Override
+    public String toString() {
+        return "Patient attended!\n" + ANSICodes.DIM + "\nname=" + name + ", age=" + age + ", gender=" + gender + ", issueKind=" + issueKind + ANSICodes.RESET;
+    }
+}
+
+public class CP03_EJ01 {
+
+    public static void main(String[] args) {
+        // TODO
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/CP/CP04_EJ01.java">
+package com.yuuhikaze.ed202510.CP;
+
+public class CP04_EJ01 {
+
+    static double compute_nthHarmonicNumber(double k) {
+        if (k == 1)
+            return 1;
+        else if (k < 1)
+            throw new RuntimeException("k is less than 1, this should not happen!");
+        return (1 / k) + compute_nthHarmonicNumber(k - 1);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(compute_nthHarmonicNumber(4));
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/CP/CP04_EJ02.java">
+package com.yuuhikaze.ed202510.CP;
+
+public class CP04_EJ02 {
+
+    
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/CP/CP04_EJ03.java">
+package com.yuuhikaze.ed202510.CP;
+
+public class CP04_EJ03 {
+
+    static boolean isPalindrome(String str) {
+        StringBuilder str_builder = new StringBuilder();
+        byte[] str_bytes = str.toLowerCase().getBytes();
+        for (int i = str_bytes.length - 1; i >= 0; i--) {
+            str_builder.append((char) str_bytes[i]);
+        }
+        return str.toLowerCase().equals(str_builder.toString());
+    }
+
+    public static void main(String[] args) {
+        System.out.println(isPalindrome("Palabra"));
+        System.out.println(isPalindrome("Aba"));
+        System.out.println(isPalindrome("Reconocer"));
+        System.out.println(isPalindrome("Sobreverbos"));
+        System.out.println(isPalindrome("Rajar"));
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI01_Animal_Entities.java">
+package com.yuuhikaze.ed202510.EI;
+
+class Lion {
+
+    @Override
+    public String toString() {
+        return "Grr, I'm a lion\n";
+    }
+}
+
+class Zebra {
+
+    @Override
+    public String toString() {
+        return "*Zebra noises*\n";
+    }
+}
+
+class Frog {
+
+    @Override
+    public String toString() {
+        return "Ribbit\n";
+    }
+}
+
+class Horse {
+
+    @Override
+    public String toString() {
+        return "I move in L\n";
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI01_Zoo_Controller.java">
+package com.yuuhikaze.ed202510.EI;
+
+import com.yuuhikaze.ed202510.TDA.SinglyLinkedList;
+
+class ZooController<E> {
+    SinglyLinkedList<Object> SSL;
+
+    public ZooController() {
+        this.SSL = new SinglyLinkedList<>();
+    }
+
+    public SinglyLinkedList<Object> getSSL() {
+        return SSL;
+    }
+
+    public void addAnimalFirst(E animal) {
+        SSL.addFirst(animal);
+    }
+    
+    public void addAnimalLast(E animal) {
+        SSL.addLast(animal);
+    }
+    
+    /**
+     * List animals stored inside SSL collection
+     */
+    @Override
+    public String toString() {
+        String result = "Welcome to anon's zoo, we have: \n";
+        for (var elem : SSL) {
+            result += elem;
+        }
+        return result;
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI02_Customer_Entity.java">
+package com.yuuhikaze.ed202510.EI;
+
+class CustomerEntity {
+    private String name;
+    private int ticketNumber;
+
+    public CustomerEntity(String name, int ticketNumber) {
+        this.name = name;
+        this.ticketNumber = ticketNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer: " + name + ", Ticket: " + ticketNumber;
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI02_Customer_Main.java">
+package com.yuuhikaze.ed202510.EI;
+
+public class EI02_Customer_Main {
+
+    public static void main(String[] args) {
+        CustomerEntity customer1 = new CustomerEntity("Alice", 101);
+        CustomerEntity customer2 = new CustomerEntity("Bob", 102);
+        CustomerEntity customer3 = new CustomerEntity("Charlie", 103);
+        CustomerEntity customer4 = new CustomerEntity("Diana", 104);
+
+        CustomerController customerQueue = new CustomerController();
+        customerQueue.addCustomer(customer1);
+        customerQueue.addCustomer(customer2);
+        customerQueue.addCustomer(customer3);
+        customerQueue.addCustomer(customer4);
+
+        System.out.println(customerQueue);
+
+        customerQueue.serveCustomer();
+        System.out.println("After serving one customer:\n" + customerQueue);
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI02_Task_Entity.java">
+package com.yuuhikaze.ed202510.EI;
+
+class TaskEntity {
+    private String description;
+
+    public TaskEntity(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "Task: " + description;
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI02_Task_Main.java">
+package com.yuuhikaze.ed202510.EI;
+
+public class EI02_Task_Main {
+
+    public static void main(String[] args) {
+        TaskEntity task1 = new TaskEntity("Complete project proposal");
+        TaskEntity task2 = new TaskEntity("Review budget reports");
+        TaskEntity task3 = new TaskEntity("Prepare for team meeting");
+        TaskEntity task4 = new TaskEntity("Submit quarterly performance review");
+
+        TaskController taskStack = new TaskController();
+        taskStack.addTask(task1);
+        taskStack.addTask(task2);
+        taskStack.addTask(task3);
+        taskStack.addTask(task4);
+
+        System.out.println(taskStack);
+
+        taskStack.removeTask();
+        System.out.println("After removing one task:\n" + taskStack);
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI03_Tab_Entity.java">
+package com.yuuhikaze.ed202510.EI;
+
+class Tab {
+    private String title;
+    private String url;
+
+    public Tab(String title, String url) {
+        this.title = title;
+        this.url = url;
+    }
+
+    @Override
+    public String toString() {
+        return title + " → " + url + "\n";
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/helpers/DefaultComparator.java">
+package com.yuuhikaze.ed202510.TDA.helpers;
+
+import java.util.Comparator;
+
+public class DefaultComparator<E extends Comparable<E>> implements Comparator<E> {
+
+    @Override
+    public int compare(E arg0, E arg1) {
+        return ((Comparable<E>) arg0).compareTo(arg1);
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/interfaces/BinaryTree.java">
+package com.yuuhikaze.ed202510.TDA.interfaces;
+
+public interface BinaryTree<E> extends Tree<E> {
+
+    // O(n)
+    /**
+     * Returns the position of the left child from queried node
+     * @param position is the node to query
+     * @return position of the left child from queried node, or {@code null} if no child exists
+     * @throws IllegalArgumentException TODO
+     */
+    Position<E> left(Position<E> position) throws IllegalArgumentException;
+
+    // O(n)
+    /**
+     * Returns the position of the right child from queried node
+     * @param position is the node to query
+     * @return position of the right child from queried node, or {@code null} if no child exists
+     * @throws IllegalArgumentException TODO
+     */
+    Position<E> right(Position<E> position) throws IllegalArgumentException;
+
+    /**
+     * Returns the position of the sibling from queried node
+     *
+     * @param position is the node to query
+     * @return position of the sibling from queried node, or {@code null} if no sibling exists
+     * @throws IllegalArgumentException TODO
+     */
+    Position<E> sibling(Position<E> position) throws IllegalArgumentException;
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/interfaces/Deque.java">
+package com.yuuhikaze.ed202510.TDA.interfaces;
+
+/**
+ * A generic Double-ended queue interface defining standard stack operations.
+ */
+public interface Deque<E> extends Iterable<E> {
+
+    void addFirst(E element);
+    void addLast(E element);
+    E removeFirst();
+    E removeLast();
+    E first();
+    E last();
+    int size();
+    boolean isEmpty();
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/interfaces/Entry.java">
+package com.yuuhikaze.ed202510.TDA.interfaces;
+
+public interface Entry<K,V> {
+    K getKey();
+    V getValue();
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/interfaces/List.java">
+package com.yuuhikaze.ed202510.TDA.interfaces;
+
+/**
+ * A generic interface representing a sequence of elements
+ *
+ * @param <E> type of elements in the list
+ */
+public interface List<E> extends Iterable<E> {
+
+    // O(1)
+    /**
+     * Returns the number of elements in list
+     *
+     * @return number of elements in list
+     */
+    int size();
+
+    // O(1)
+    /**
+     * Checks whether list contains no elements
+     *
+     * @return {@code true} if list empty, {@code false} otherwise
+     */
+    boolean isEmpty();
+
+    // O(1)
+    /**
+     * Returns the element at the specified index
+     *
+     * @param i is the index
+     * @return element at position i
+     * @throws IndexOutOfBoundsException if the index is not in range [0,size()-1]
+     */
+    E get(int i) throws IndexOutOfBoundsException;
+
+    // O(1)
+    /**
+     * Replaces given element at the specified index
+     *
+     * @param i is the index
+     * @param element is the entity to retrieve
+     * @return replaced element at i
+     * @throws IndexOutOfBoundsException if the index is not in range [0,size()-1]
+     */
+    E set(int i, E element) throws IndexOutOfBoundsException;
+
+    // O(n)
+    /**
+     * Inserts element at the specified index
+     *
+     * @param i is the index
+     * @param element is the entity to insert
+     * @throws IndexOutOfBoundsException if the index is not in range [0,size()]
+     */
+    void insert(int i, E element) throws IndexOutOfBoundsException;
+
+    // O(1) amortized
+    /**
+     * Adds element to the back of the list
+     *
+     * @param element is the entity to add
+     */
+    void add(E element);
+
+    // O(n)
+    /**
+     * Removes element at the specified index
+     *
+     * @param i is the index
+     * @return removed element at i
+     * @throws IndexOutOfBoundsException if the index is not in range [0,size()-1]
+     */
+    E remove(int i) throws IndexOutOfBoundsException;
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/interfaces/Queue.java">
+package com.yuuhikaze.ed202510.TDA.interfaces;
+
+/**
+ * A generic Queue interface defining standard queue operations.
+ */
+public interface Queue<E> extends Iterable<E> {
+    /**
+     * Adds an element to the rear of the queue.
+     */
+    void enqueue(E element);
+
+    /**
+     * Removes and returns the first element of the queue.
+     */
+    E dequeue();
+
+    /**
+     * Returns, but does not remove, the first element of the queue.
+     */
+    E first();
+
+    /**
+     * Returns the number of elements in the queue.
+     */
+    int size();
+
+    /**
+     * Tests whether the queue is empty.
+     */
+    boolean isEmpty();
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/interfaces/Stack.java">
+package com.yuuhikaze.ed202510.TDA.interfaces;
+
+/**
+ * A generic Stack interface defining standard stack operations.
+ */
+public interface Stack<E> {
+    /**
+     * Inserts an element at the top of the stack.
+     */
+    void push(E element);
+
+    /**
+     * Removes and returns the element from the top of the stack.
+     */
+    E pop();
+
+    /**
+     * Returns, but does not remove, the element at the top of the stack.
+     */
+    E top();
+
+    /**
+     * Returns the number of elements in the stack.
+     */
+    int size();
+
+    /**
+     * Tests whether the stack is empty.
+     */
+    boolean isEmpty();
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/interfaces/Tree.java">
+package com.yuuhikaze.ed202510.TDA.interfaces;
+
+import java.util.Iterator;
+
+public interface Tree<E> extends Iterable<E> {
+
+    // O(1)
+    /**
+     * Returns the number of elements in tree
+     *
+     * @return number of elements in tree
+     */
+    int size();
+
+    // O(1)
+    /**
+     * Checks whether tree contains no elements
+     *
+     * @return {@code true} if list empty, {@code false} otherwise
+     */
+    boolean isEmpty();
+
+    // O(n)
+    /**
+     * Returns the position of the root node
+     *
+     * @return position of root node
+     */
+    Position<E> root();
+
+    // O(n)
+    /**
+     * Returns the position of the parent node from queried node
+     *
+     * @param position is the node to query
+     * @return position of the parent node from queried node
+     * @throws IllegalArgumentException TODO
+     */
+    Position<E> parent(Position<E> position) throws IllegalArgumentException;
+
+    /**
+     * Returns an iterable collection containing the children of the queried node
+     *
+     * @param position is the node to query
+     * @return iterable collection containing the children of the queried node
+     * @throws IllegalArgumentException TODO
+     */
+    Iterable<Position<E>> children(Position<E> position) throws IllegalArgumentException;
+
+    /**
+     * Returns the number of children of the queried node
+     *
+     * @param position is the node to query
+     * @return the number of children of the queried node
+     * @throws IllegalArgumentException TODO
+     */
+    int numChildren(Position<E> position) throws IllegalArgumentException;
+
+    /**
+     * Checks whether the given node has children
+     *
+     * @param position is the node to query
+     * @return {@code true} if node has at least one child, {@code false} otherwise
+     * @throws IllegalArgumentException
+     */
+    boolean isInternal(Position<E> position) throws IllegalArgumentException;
+
+    /**
+     * Checks whether the given node does not have children
+     *
+     * @param position is the node to query
+     * @return {@code true} if node does not have children, {@code false} otherwise
+     * @throws IllegalArgumentException
+     */
+    boolean isExternal(Position<E> position) throws IllegalArgumentException;
+
+    /**
+     * Checks whether given node is root
+     *
+     * @param position is the node to query
+     * @return {@code true} if given node is root, {@code false} otherwise
+     * @throws IllegalArgumentException TODO
+     */
+    boolean isRoot(Position<E> position) throws IllegalArgumentException;
+
+    /**
+     * Returns an iterator to all the elements of the tree
+     *
+     * @return iterator to all the elements of the tree
+     */
+    Iterator<E> iterator();
+
+    /**
+     * Returns an iterator to all the nodes of the tree
+     *
+     * @return iterator to all the nodes of the tree
+     */
+    Iterable<Position<E>> positions();
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/AbstractBinaryTree.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import com.yuuhikaze.ed202510.TDA.interfaces.BinaryTree;
+import com.yuuhikaze.ed202510.TDA.interfaces.List;
+import com.yuuhikaze.ed202510.TDA.interfaces.Position;
+import com.yuuhikaze.ed202510.TDA.interfaces.Queue;
+
+public class AbstractBinaryTree<E> extends AbstractTree<E> implements BinaryTree<E> {
+
+    @Override
+    public Position<E> left(Position<E> position) throws IllegalArgumentException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'left'");
+    }
+
+    @Override
+    public Position<E> right(Position<E> position) throws IllegalArgumentException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'right'");
+    }
+
+    @Override
+    public Position<E> sibling(Position<E> position) throws IllegalArgumentException {
+        Position<E> parent = parent(position);
+        if (parent == null)
+            return null;
+        if (position == left(parent))
+            return right(parent); // might be null
+        else
+            return left(parent); // might be null
+    }
+
+    @Override
+    public int numChildren(Position<E> position) {
+        int count = 0;
+        if (left(position) != null)
+            count++;
+        if (right(position) != null)
+            count++;
+        return count;
+    }
+
+    public Iterable<Position<E>> children(Position<E> position) {
+        List<Position<E>> snapshot = new Vector<>(2);
+        if (left(position) != null)
+            snapshot.add(left(position));
+        if (right(position) != null)
+            snapshot.add(left(position));
+        return snapshot;
+    }
+
+    public Iterable<Position<E>> inorder() {
+        Queue<Position<E>> snapshot = new SLLQueue<>();
+        if (!isEmpty())
+            inorderSubtree(root(), snapshot);
+        return snapshot;
+    }
+
+    private void inorderSubtree(Position<E> position, Queue<Position<E>> snapshot) {
+        try {
+            Position<E> left = left(position);
+            inorderSubtree(left, snapshot);
+        } catch (IllegalArgumentException e) {
+        }
+        snapshot.enqueue(position);
+        try {
+            Position<E> right = left(position);
+            inorderSubtree(right, snapshot);
+        } catch (IllegalArgumentException e) {
+        }
+    }
+
+    @Override
+    public Iterable<Position<E>> positions() {
+        return inorder();
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/AbstractTree.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import com.yuuhikaze.ed202510.TDA.interfaces.Position;
+import com.yuuhikaze.ed202510.TDA.interfaces.Queue;
+import com.yuuhikaze.ed202510.TDA.interfaces.Tree;
+import java.util.Iterator;
+
+public class AbstractTree<E> implements Tree<E> {
+
+    private class ElementIterator implements Iterator<E> {
+        Iterator<Position<E>> positionIterator = positions().iterator();
+
+        public boolean hasNext() {
+            return positionIterator.hasNext();
+        }
+
+        public E next() {
+            return positionIterator.next().getElement();
+        }
+
+        public void remove() {
+            positionIterator.remove();
+        }
+    }
+
+    @Override
+    public int size() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'size'");
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size() == 0;
+    }
+
+    @Override
+    public Position<E> root() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'root'");
+    }
+
+    @Override
+    public Position<E> parent(Position<E> position) throws IllegalArgumentException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'parent'");
+    }
+
+    @Override
+    public Iterable<Position<E>> children(Position<E> position) throws IllegalArgumentException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'children'");
+    }
+
+    @Override
+    public int numChildren(Position<E> position) throws IllegalArgumentException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'numChildren'");
+    }
+
+    // O(1)
+    @Override
+    public boolean isInternal(Position<E> position) throws IllegalArgumentException {
+        return numChildren(position) > 0;
+    }
+
+    // O(1)
+    @Override
+    public boolean isExternal(Position<E> position) throws IllegalArgumentException {
+        return numChildren(position) == 0;
+    }
+
+    @Override
+    public boolean isRoot(Position<E> position) throws IllegalArgumentException {
+        return position == root();
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return new ElementIterator();
+    }
+
+    @Override
+    public Iterable<Position<E>> positions() {
+        return postorder();
+    }
+
+    // O(n)
+    public int depth(Position<E> position) {
+        if (isRoot(position))
+            return 0;
+        else
+            return 1 + depth(parent(position));
+    }
+
+    // O(n)
+    public int height(Position<E> position) {
+        int height = 0;
+        for (Position<E> child : children(position))
+            height = Math.max(height, 1 + height(child));
+        return height;
+    }
+
+    public Iterable<Position<E>> preorder() {
+        Queue<Position<E>> snapshot = new SLLQueue<>();
+        if (!isEmpty())
+            preorderSubtree(root(), snapshot);
+        return snapshot;
+    }
+
+    private void preorderSubtree(Position<E> position, Queue<Position<E>> snapshot) {
+        snapshot.enqueue(position);
+        for (Position<E> child : children(position)) {
+            preorderSubtree(child, snapshot);
+        }
+    }
+
+    public Iterable<Position<E>> postorder() {
+        Queue<Position<E>> snapshot = new SLLQueue<>();
+        if (!isEmpty())
+            postorderSubtree(root(), snapshot);
+        return snapshot;
+    }
+
+    private void postorderSubtree(Position<E> position, Queue<Position<E>> snapshot) {
+        for (Position<E> child : children(position)) {
+            postorderSubtree(child, snapshot);
+        }
+        snapshot.enqueue(position);
+    }
+
+    public Iterable<Position<E>> breadthFirst() {
+        Queue<Position<E>> snapshot = new SLLQueue<>();
+        if (!isEmpty())
+            breadthFirstSubtree(root(), snapshot);
+        return snapshot;
+    }
+
+    // Tree must be balanced (hypothesis)
+    private void breadthFirstSubtree(Position<E> position, Queue<Position<E>> snapshot) {
+        Queue<Position<E>> layers = new SLLQueue<Position<E>>();
+        layers.enqueue(position);
+        while (!layers.isEmpty()) {
+            Position<E> currentLayer = layers.dequeue();
+            snapshot.enqueue(currentLayer);
+            for (Position<E> child : children(currentLayer)) {
+                layers.enqueue(child);
+            }
+        }
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/ArrayList.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import java.util.Iterator;
+import com.yuuhikaze.ed202510.TDA.interfaces.List;
+
+public class ArrayList<E> implements List<E> {
+
+    private static final int CAPACITY = 16; // default capacity
+    private E[] data;
+    private int size;
+
+    public ArrayList() {
+        this(CAPACITY);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList(int capacity) {
+        this.size = 0;
+        data = (E[]) new Object[capacity]; // safe cast
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public E get(int i) throws IndexOutOfBoundsException {
+        checkIndex(i, size);
+        return data[i];
+    }
+
+    @Override
+    public E set(int i, E element) throws IndexOutOfBoundsException {
+        checkIndex(i, size);
+        E tmp = data[i];
+        data[i] = element;
+        return tmp;
+    }
+
+    @Override
+    public void insert(int i, E element) throws IndexOutOfBoundsException {
+        checkIndex(i, size + 1);
+        if (size == data.length)
+            throw new IllegalArgumentException("Array is full");
+        for (int k = size - 1; k >= i; k--)
+            data[k + 1] = data[k];
+        data[i] = element;
+        this.size++;
+    }
+
+    @Override
+    public void add(E element) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'add'");
+    }
+
+    @Override
+    public E remove(int i) throws IndexOutOfBoundsException {
+        checkIndex(i, size);
+        E tmp = data[i];
+        for (int k = i; k < size; k++)
+            data[k] = data[k + 1];
+        data[size - 1] = null;
+        this.size--;
+        return tmp;
+    }
+
+    protected void checkIndex(int i, int n) throws IndexOutOfBoundsException {
+        if (i < 0 || i >= n)
+            throw new IndexOutOfBoundsException("Illegal index");
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'iterator'");
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/DLLDeque.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import com.yuuhikaze.ed202510.TDA.interfaces.Deque;
+
+/**
+ * A deque implementation inheriting from DoublyLinkedList and implementing Deque interface.
+ */
+public class DLLDeque<E> extends DoublyLinkedList<E> implements Deque<E> {
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/LinkedBinaryTree.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import com.yuuhikaze.ed202510.TDA.interfaces.Position;
+
+public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
+
+    protected static class Node<E> implements Position<E> {
+        private E element;
+        private Node<E> parent;
+        private Node<E> left;
+        private Node<E> right;
+
+        public Node(E element, Node<E> parent, Node<E> left, Node<E> right) {
+            this.element = element;
+            this.parent = parent;
+            this.left = left;
+            this.right = right;
+        }
+
+        @Override
+        public E getElement() throws IllegalStateException {
+            return element;
+        }
+
+        public Node<E> getParent() {
+            return parent;
+        }
+
+        public Node<E> getLeft() {
+            return left;
+        }
+
+        public Node<E> getRight() {
+            return right;
+        }
+
+        public void setElement(E element) {
+            this.element = element;
+        }
+
+        public void setParent(Node<E> parent) {
+            this.parent = parent;
+        }
+
+        public void setLeft(Node<E> left) {
+            this.left = left;
+        }
+
+        public void setRight(Node<E> right) {
+            this.right = right;
+        }
+    }
+
+    protected Node<E> createNode(E element, Node<E> parent, Node<E> left, Node<E> right) {
+        return new Node<E>(element, parent, left, right);
+    }
+
+    protected Node<E> root;
+    private int size;
+
+    public LinkedBinaryTree() {
+        this.root = null;
+        this.size = 0;
+    }
+
+    /**
+     * Validates position is in the list and that is of {@code Node} type
+     *
+     * @param position is the position to validate
+     * @return position casted as node
+     * @throws IllegalArgumentException when position fails the validation
+     */
+    private Node<E> validate(Position<E> position) throws IllegalArgumentException {
+        if (!(position instanceof Node))
+            throw new IllegalArgumentException("Position must be of Node type");
+        Node<E> node = (Node<E>) position; // safe cast
+        if (node.getParent() == null)
+            throw new IllegalArgumentException("Position is no longer in the list");
+        return node;
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public Position<E> root() {
+        return root;
+    }
+
+    @Override
+    public Position<E> parent(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        return node.getParent();
+    }
+
+    @Override
+    public Position<E> left(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        return node.getLeft();
+    }
+
+    @Override
+    public Position<E> right(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        return node.getRight();
+    }
+
+    // O(1)
+    public Position<E> addRoot(E element) throws IllegalStateException {
+        if (!isEmpty())
+            throw new IllegalStateException("Tree is not empty");
+        root = createNode(element, null, null, null);
+        size = 1;
+        return root;
+    }
+
+    // O(1)
+    public Position<E> addLeft(Position<E> position, E element) throws IllegalArgumentException {
+        Node<E> parent = validate(position);
+        if (parent.getLeft() != null)
+            throw new IllegalArgumentException("Specified position already has a left child");
+        Node<E> left = createNode(element, parent, null, null);
+        parent.setLeft(left);
+        this.size++;
+        return left;
+    }
+
+    // O(1)
+    public Position<E> addRight(Position<E> position, E element) throws IllegalArgumentException {
+        Node<E> parent = validate(position);
+        if (parent.getRight() != null)
+            throw new IllegalArgumentException("Specified position already has a right child");
+        Node<E> right = createNode(element, parent, null, null);
+        parent.setRight(right);
+        this.size++;
+        return right;
+    }
+
+    // O(1)
+    public E set(Position<E> position, E element) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        E tmp = node.getElement();
+        node.setElement(element);
+        return tmp;
+    }
+
+    // O(1)
+    public void attach(
+            Position<E> position, LinkedBinaryTree<E> leftTree, LinkedBinaryTree<E> rightTree)
+            throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        if (isInternal(position))
+            throw new IllegalArgumentException("Specified position must be a leaf node");
+        size += leftTree.size() + rightTree.size();
+        if (!leftTree.isEmpty()) {
+            leftTree.root.setParent(node);
+            node.setLeft(leftTree.root);
+            leftTree.root = null;
+            leftTree.size = 0;
+        }
+        if (!rightTree.isEmpty()) {
+            rightTree.root.setParent(node);
+            node.setRight(rightTree.root);
+            rightTree.root = null;
+            rightTree.size = 0;
+        }
+    }
+
+    // O(1)
+    public E remove(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position); // candidate for deletion
+        if (numChildren(position) == 2)
+            throw new IllegalArgumentException("Specified position has two children");
+        Node<E> child = (node.getLeft() != null ? node.getLeft() : node.getRight());
+        if (child != null) {
+            // Update the child's parent reference to the node above the candidate for deletion
+            child.setParent(node.getParent());
+        }
+        if (node == root) {
+            root = child; // if targeted node for deletion is root, its child becomes root
+        } else {
+            Node<E> parent = node.getParent();
+            // Update the relevant side
+            // Is the current candidate for deletion on the left or right?
+            if (node == parent.getLeft()) {
+                parent.setLeft(child);
+            } else {
+                parent.setRight(child);
+            }
+        }
+        this.size--;
+        E tmp = node.getElement();
+        // Free memory
+        node.setElement(null);
+        node.setLeft(null);
+        node.setRight(null);
+        node.setParent(node); // convention for defunct node - parent is set to himself
+        return tmp;
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/LinkedPositionalList.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import java.util.Iterator;
+import com.yuuhikaze.ed202510.TDA.interfaces.Position;
+import com.yuuhikaze.ed202510.TDA.interfaces.PositionalList;
+
+public class LinkedPositionalList<E> implements PositionalList<E> {
+
+    private static class Node<E> implements Position<E> {
+        private E element;
+        private Node<E> previous;
+        private Node<E> next;
+
+        public Node(E element, Node<E> previous, Node<E> next) {
+            this.element = element;
+            this.previous = previous;
+            this.next = next;
+        }
+
+        @Override
+        public E getElement() throws IllegalStateException {
+            if (next == null)
+                throw new IllegalArgumentException("Position no longer valid"); // TODO
+            return element;
+        }
+
+        public Node<E> getPrevious() {
+            return previous;
+        }
+
+        public Node<E> getNext() {
+            return next;
+        }
+
+        public void setElement(E element) {
+            this.element = element;
+        }
+
+        public void setPrevious(Node<E> previous) {
+            this.previous = previous;
+        }
+
+        public void setNext(Node<E> next) {
+            this.next = next;
+        }
+    }
+
+    private Node<E> header;
+    private Node<E> trailer;
+    private int size = 0;
+
+    public LinkedPositionalList() {
+        header = new Node<>(null, null, null);
+        trailer = new Node<>(null, header, null);
+        header.setNext(trailer);
+    }
+
+    /**
+     * Validates position is in the list and that is of {@code Node} type
+     *
+     * @param position is the position to validate
+     * @return position casted as node
+     * @throws IllegalArgumentException when position fails the validation
+     */
+    private Node<E> validate(Position<E> position) throws IllegalArgumentException {
+        if (!(position instanceof Node))
+            throw new IllegalArgumentException("Position must be of Node type");
+        Node<E> node = (Node<E>) position; // safe cast
+        if (node.getNext() == null)
+            throw new IllegalArgumentException("Position is no longer in the list");
+        return node;
+    }
+
+    /**
+     * Returns given node as position
+     *
+     * @param node TODO
+     * @return node as position, or {@code null} if it is a sentinel
+     */
+    private Position<E> nodeAsPosition(Node<E> node) {
+        if (node == header || node == trailer)
+            return null;
+        return node;
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public Position<E> first() {
+        return nodeAsPosition(header.getNext());
+    }
+
+    @Override
+    public Position<E> last() {
+        return nodeAsPosition(trailer.getPrevious());
+    }
+
+    @Override
+    public Position<E> before(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        return nodeAsPosition(node.getPrevious());
+    }
+
+    @Override
+    public Position<E> after(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        return nodeAsPosition(node.getNext());
+    }
+
+    private Position<E> addBetween(E element, Node<E> predecessor, Node<E> successor) {
+        Node<E> node = new Node<>(element, predecessor, successor);
+        predecessor.setNext(node);
+        successor.setPrevious(node);
+        this.size++;
+        return node;
+    }
+
+    @Override
+    public Position<E> addFirst(E element) {
+        return addBetween(element, header, header.getNext());
+    }
+
+    @Override
+    public Position<E> addLast(E element) {
+        return addBetween(element, trailer.getPrevious(), trailer);
+    }
+
+    @Override
+    public Position<E> addBefore(Position<E> position, E element) {
+        Node<E> node = validate(position);
+        return addBetween(element, node.getPrevious(), node);
+    }
+
+    @Override
+    public Position<E> addAfter(Position<E> position, E element) {
+        Node<E> node = validate(position);
+        return addBetween(element, node, node.getNext());
+    }
+
+    @Override
+    public E set(Position<E> position, E element) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        E tmp = node.getElement();
+        node.setElement(element);
+        return tmp;
+    }
+
+    @Override
+    public E remove(Position<E> position) throws IllegalArgumentException {
+        Node<E> node = validate(position);
+        Node<E> predecessor = node.getPrevious();
+        Node<E> successor = node.getNext();
+        predecessor.setNext(successor);
+        successor.setPrevious(predecessor);
+        this.size--;
+        E tmp = node.getElement();
+        // theoretically the following is not needed ↓
+        node.setElement(null);
+        node.setNext(null);
+        node.setPrevious(null);
+        return tmp;
+    }
+
+    @Override
+    public Iterator<Position<E>> iterator() {
+        return new Iterator<Position<E>>() {
+            private Position<E> current = nodeAsPosition(header.getNext());
+
+            @Override
+            public boolean hasNext() {
+                return after(current) != null;
+            }
+
+            @Override
+            public Position<E> next() {
+                Position<E> tmp = current;
+                current = after(current);
+                return tmp;
+            }
+            
+        };
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/Vector.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import java.util.Iterator;
+import com.yuuhikaze.ed202510.TDA.interfaces.List;
+
+public class Vector<E> implements List<E> {
+
+    private static final int DEFAULT_CAPACITY = 16;
+    private E[] data;
+    private int size;
+
+    public Vector() {
+        this(DEFAULT_CAPACITY);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Vector(int capacity) {
+        this.size = 0;
+        data = (E[]) new Object[capacity];
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public E get(int i) throws IndexOutOfBoundsException {
+        return data[i];
+    }
+
+    @Override
+    public E set(int i, E element) throws IndexOutOfBoundsException {
+        E tmp = data[i];
+        data[i] = element;
+        return tmp;
+    }
+
+    @Override
+    public void insert(int i, E element) throws IndexOutOfBoundsException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'insert'");
+    }
+
+    @Override
+    public void add(E element) {
+        if (size == data.length)
+            resize(2 * data.length);
+        else if (size > data.length)
+            throw new IllegalStateException("Size can't be greater than capacity");
+        data[size] = element;
+        this.size++;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void resize(int capacity) {
+        E[] tmp = (E[]) new Object[capacity];
+        for (int k = 0; k < size; k++)
+            tmp[k] = data[k];
+        data = tmp;
+    }
+
+    @Override
+    public E remove(int i) throws IndexOutOfBoundsException {
+        E tmp = data[i];
+        for (int k = i; k < size; k++)
+            data[k] = data[k + 1];
+        data[size - 1] = null;
+        this.size--;
+        return tmp;
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+            private int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index != size - 1;
+            }
+
+            @Override
+            public E next() {
+                E element = data[index];
+                this.index++;
+                return element;
+            }
+            
+        };
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/utils/ANSICodes.java">
+package com.yuuhikaze.ed202510.utils;
+
+public enum ANSICodes {
+    RESET("\u001B[0m"),
+    BOLD("\u001B[1m"),
+    DIM("\u001B[2m");
+
+    private final String code;
+
+    ANSICodes(String code) {
+        this.code = code;
+    }
+
+    @Override
+    public String toString() {
+        return code;
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/utils/ChecksumUtil.java">
+package com.yuuhikaze.ed202510.utils;
+
+import java.util.zip.CRC32;
+
+public class ChecksumUtil {
+
+    public static long computeCRC32(Object data) {
+        CRC32 crc = new CRC32();
+        crc.update(data.toString().getBytes());
+        return crc.getValue();
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/utils/ScannerSingleton.java">
+package com.yuuhikaze.ed202510.utils;
+
+import java.util.Scanner;
+
+public class ScannerSingleton {
+    private static final Scanner scanner = new Scanner(System.in);
+
+    private ScannerSingleton() {}
+
+    public static int readInteger(String prompt) {
+        int result;
+        while (true) {
+            System.out.print(prompt);
+            if (scanner.hasNextInt()) {
+                result = scanner.nextInt();
+                scanner.nextLine();
+                return result;
+            } else {
+                System.err.println("Invalid input! Provide an integer.");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    public static String readString(String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine().trim();
+    }
+
+    public static void closeScanner() {
+        if (scanner != null) {
+            scanner.close();
+        }
+    }
+}
+</file>
+
+<file path=".gitattributes">
+#
+# https://help.github.com/articles/dealing-with-line-endings/
+#
+# Linux start script should use lf
+/gradlew        text eol=lf
+
+# These are Windows script files and should use crlf
+*.bat           text eol=crlf
+
+# Binary files should be left untouched
+*.jar           binary
+</file>
+
+<file path="gradle.properties">
+# This file was generated by the Gradle 'init' task.
+# https://docs.gradle.org/current/userguide/build_environment.html#sec:gradle_configuration_properties
+
+org.gradle.configuration-cache=true
+</file>
+
+<file path="gradlew">
+#!/bin/sh
+
+#
+# Copyright © 2015-2021 the original authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+##############################################################################
+#
+#   Gradle start up script for POSIX generated by Gradle.
+#
+#   Important for running:
+#
+#   (1) You need a POSIX-compliant shell to run this script. If your /bin/sh is
+#       noncompliant, but you have some other compliant shell such as ksh or
+#       bash, then to run this script, type that shell name before the whole
+#       command line, like:
+#
+#           ksh Gradle
+#
+#       Busybox and similar reduced shells will NOT work, because this script
+#       requires all of these POSIX shell features:
+#         * functions;
+#         * expansions «$var», «${var}», «${var:-default}», «${var+SET}»,
+#           «${var#prefix}», «${var%suffix}», and «$( cmd )»;
+#         * compound commands having a testable exit status, especially «case»;
+#         * various built-in commands including «command», «set», and «ulimit».
+#
+#   Important for patching:
+#
+#   (2) This script targets any POSIX shell, so it avoids extensions provided
+#       by Bash, Ksh, etc; in particular arrays are avoided.
+#
+#       The "traditional" practice of packing multiple parameters into a
+#       space-separated string is a well documented source of bugs and security
+#       problems, so this is (mostly) avoided, by progressively accumulating
+#       options in "$@", and eventually passing that to Java.
+#
+#       Where the inherited environment variables (DEFAULT_JVM_OPTS, JAVA_OPTS,
+#       and GRADLE_OPTS) rely on word-splitting, this is performed explicitly;
+#       see the in-line comments for details.
+#
+#       There are tweaks for specific operating systems such as AIX, CygWin,
+#       Darwin, MinGW, and NonStop.
+#
+#   (3) This script is generated from the Groovy template
+#       https://github.com/gradle/gradle/blob/HEAD/platforms/jvm/plugins-application/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
+#       within the Gradle project.
+#
+#       You can find Gradle at https://github.com/gradle/gradle/.
+#
+##############################################################################
+
+# Attempt to set APP_HOME
+
+# Resolve links: $0 may be a link
+app_path=$0
+
+# Need this for daisy-chained symlinks.
+while
+    APP_HOME=${app_path%"${app_path##*/}"}  # leaves a trailing /; empty if no leading path
+    [ -h "$app_path" ]
+do
+    ls=$( ls -ld "$app_path" )
+    link=${ls#*' -> '}
+    case $link in             #(
+      /*)   app_path=$link ;; #(
+      *)    app_path=$APP_HOME$link ;;
+    esac
+done
+
+# This is normally unused
+# shellcheck disable=SC2034
+APP_BASE_NAME=${0##*/}
+# Discard cd standard output in case $CDPATH is set (https://github.com/gradle/gradle/issues/25036)
+APP_HOME=$( cd -P "${APP_HOME:-./}" > /dev/null && printf '%s\n' "$PWD" ) || exit
+
+# Use the maximum available, or set MAX_FD != -1 to use that value.
+MAX_FD=maximum
+
+warn () {
+    echo "$*"
+} >&2
+
+die () {
+    echo
+    echo "$*"
+    echo
+    exit 1
+} >&2
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false
+msys=false
+darwin=false
+nonstop=false
+case "$( uname )" in                #(
+  CYGWIN* )         cygwin=true  ;; #(
+  Darwin* )         darwin=true  ;; #(
+  MSYS* | MINGW* )  msys=true    ;; #(
+  NONSTOP* )        nonstop=true ;;
+esac
+
+CLASSPATH="\\\"\\\""
+
+
+# Determine the Java command to use to start the JVM.
+if [ -n "$JAVA_HOME" ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+        # IBM's JDK on AIX uses strange locations for the executables
+        JAVACMD=$JAVA_HOME/jre/sh/java
+    else
+        JAVACMD=$JAVA_HOME/bin/java
+    fi
+    if [ ! -x "$JAVACMD" ] ; then
+        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+else
+    JAVACMD=java
+    if ! command -v java >/dev/null 2>&1
+    then
+        die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+fi
+
+# Increase the maximum file descriptors if we can.
+if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
+    case $MAX_FD in #(
+      max*)
+        # In POSIX sh, ulimit -H is undefined. That's why the result is checked to see if it worked.
+        # shellcheck disable=SC2039,SC3045
+        MAX_FD=$( ulimit -H -n ) ||
+            warn "Could not query maximum file descriptor limit"
+    esac
+    case $MAX_FD in  #(
+      '' | soft) :;; #(
+      *)
+        # In POSIX sh, ulimit -n is undefined. That's why the result is checked to see if it worked.
+        # shellcheck disable=SC2039,SC3045
+        ulimit -n "$MAX_FD" ||
+            warn "Could not set maximum file descriptor limit to $MAX_FD"
+    esac
+fi
+
+# Collect all arguments for the java command, stacking in reverse order:
+#   * args from the command line
+#   * the main class name
+#   * -classpath
+#   * -D...appname settings
+#   * --module-path (only if needed)
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and GRADLE_OPTS environment variables.
+
+# For Cygwin or MSYS, switch paths to Windows format before running java
+if "$cygwin" || "$msys" ; then
+    APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
+    CLASSPATH=$( cygpath --path --mixed "$CLASSPATH" )
+
+    JAVACMD=$( cygpath --unix "$JAVACMD" )
+
+    # Now convert the arguments - kludge to limit ourselves to /bin/sh
+    for arg do
+        if
+            case $arg in                                #(
+              -*)   false ;;                            # don't mess with options #(
+              /?*)  t=${arg#/} t=/${t%%/*}              # looks like a POSIX filepath
+                    [ -e "$t" ] ;;                      #(
+              *)    false ;;
+            esac
+        then
+            arg=$( cygpath --path --ignore --mixed "$arg" )
+        fi
+        # Roll the args list around exactly as many times as the number of
+        # args, so each arg winds up back in the position where it started, but
+        # possibly modified.
+        #
+        # NB: a `for` loop captures its iteration list before it begins, so
+        # changing the positional parameters here affects neither the number of
+        # iterations, nor the values presented in `arg`.
+        shift                   # remove old arg
+        set -- "$@" "$arg"      # push replacement arg
+    done
+fi
+
+
+# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+
+# Collect all arguments for the java command:
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
+#     and any embedded shellness will be escaped.
+#   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be
+#     treated as '${Hostname}' itself on the command line.
+
+set -- \
+        "-Dorg.gradle.appname=$APP_BASE_NAME" \
+        -classpath "$CLASSPATH" \
+        -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
+        "$@"
+
+# Stop when "xargs" is not available.
+if ! command -v xargs >/dev/null 2>&1
+then
+    die "xargs is not available"
+fi
+
+# Use "xargs" to parse quoted args.
+#
+# With -n1 it outputs one arg per line, with the quotes and backslashes removed.
+#
+# In Bash we could simply go:
+#
+#   readarray ARGS < <( xargs -n1 <<<"$var" ) &&
+#   set -- "${ARGS[@]}" "$@"
+#
+# but POSIX shell has neither arrays nor command substitution, so instead we
+# post-process each arg (as a line of input to sed) to backslash-escape any
+# character that might be a shell metacharacter, then use eval to reverse
+# that process (while maintaining the separation between arguments), and wrap
+# the whole thing up as a single "set" statement.
+#
+# This will of course break if any of these variables contains a newline or
+# an unmatched quote.
+#
+
+eval "set -- $(
+        printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
+        xargs -n1 |
+        sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
+        tr '\n' ' '
+    )" '"$@"'
+
+exec "$JAVACMD" "$@"
+</file>
+
+<file path="gradlew.bat">
+@rem
+@rem Copyright 2015 the original author or authors.
+@rem
+@rem Licensed under the Apache License, Version 2.0 (the "License");
+@rem you may not use this file except in compliance with the License.
+@rem You may obtain a copy of the License at
+@rem
+@rem      https://www.apache.org/licenses/LICENSE-2.0
+@rem
+@rem Unless required by applicable law or agreed to in writing, software
+@rem distributed under the License is distributed on an "AS IS" BASIS,
+@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@rem See the License for the specific language governing permissions and
+@rem limitations under the License.
+@rem
+@rem SPDX-License-Identifier: Apache-2.0
+@rem
+
+@if "%DEBUG%"=="" @echo off
+@rem ##########################################################################
+@rem
+@rem  Gradle startup script for Windows
+@rem
+@rem ##########################################################################
+
+@rem Set local scope for the variables with windows NT shell
+if "%OS%"=="Windows_NT" setlocal
+
+set DIRNAME=%~dp0
+if "%DIRNAME%"=="" set DIRNAME=.
+@rem This is normally unused
+set APP_BASE_NAME=%~n0
+set APP_HOME=%DIRNAME%
+
+@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
+
+@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+
+@rem Find java.exe
+if defined JAVA_HOME goto findJavaFromJavaHome
+
+set JAVA_EXE=java.exe
+%JAVA_EXE% -version >NUL 2>&1
+if %ERRORLEVEL% equ 0 goto execute
+
+echo. 1>&2
+echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 1>&2
+echo. 1>&2
+echo Please set the JAVA_HOME variable in your environment to match the 1>&2
+echo location of your Java installation. 1>&2
+
+goto fail
+
+:findJavaFromJavaHome
+set JAVA_HOME=%JAVA_HOME:"=%
+set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+
+if exist "%JAVA_EXE%" goto execute
+
+echo. 1>&2
+echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME% 1>&2
+echo. 1>&2
+echo Please set the JAVA_HOME variable in your environment to match the 1>&2
+echo location of your Java installation. 1>&2
+
+goto fail
+
+:execute
+@rem Setup the command line
+
+set CLASSPATH=
+
+
+@rem Execute Gradle
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
+
+:end
+@rem End local scope for the variables with windows NT shell
+if %ERRORLEVEL% equ 0 goto mainEnd
+
+:fail
+rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
+rem the _cmd.exe /c_ return code!
+set EXIT_CODE=%ERRORLEVEL%
+if %EXIT_CODE% equ 0 set EXIT_CODE=1
+if not ""=="%GRADLE_EXIT_CONSOLE%" exit %EXIT_CODE%
+exit /b %EXIT_CODE%
+
+:mainEnd
+if "%OS%"=="Windows_NT" endlocal
+
+:omega
+</file>
+
+<file path="settings.gradle">
+/*
+ * This file was generated by the Gradle 'init' task.
+ *
+ * The settings file is used to specify which projects to include in your build.
+ * For more detailed information on multi-project builds, please refer to https://docs.gradle.org/8.14.3/userguide/multi_project_builds.html in the Gradle documentation.
+ */
+
+rootProject.name = 'ed202510'
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/CP/CP01_EJ02.java">
+package com.yuuhikaze.ed202510.CP;
+
+import com.yuuhikaze.ed202510.TDA.SinglyLinkedList;
+import com.yuuhikaze.ed202510.utils.ANSICodes;
+import com.yuuhikaze.ed202510.utils.ChecksumUtil;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+class Controller {
+    /**
+     * 0: Success
+     *
+     * <p>
+     * 1: Attempts reservation on non available book (quantity)
+     *
+     * <p>
+     * 2: Attempts reservation on non available book (existence)
+     */
+    public static final int TRIGGER_CASE = 2;
+}
+
+
+class ReservationRequest {
+    String solicitor;
+    Book book;
+
+    public ReservationRequest(String solicitor, Book book) {
+        this.solicitor = solicitor;
+        this.book = book;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public String getSolicitor() {
+        return solicitor;
+    }
+}
+
+
+class Library {
+    // operate as queue =>
+    // insert at tail
+    // remove from head
+    private Map<Long, BookInstance> books;
+    private SinglyLinkedList<ReservationRequest> rRequests;
+    private List<Book> unattendedRequests;
+    private boolean problemsOccurred;
+
+    public Library(BookInstance[] books) {
+        this.books = new HashMap<Long, BookInstance>();
+        for (BookInstance book : books) {
+            Long checksum = ChecksumUtil.computeCRC32(book);
+            this.books.put(checksum, book);
+        }
+        this.rRequests = new SinglyLinkedList<>();
+        this.unattendedRequests = new ArrayList<Book>();
+        this.problemsOccurred = false;
+    }
+
+    class RequestHandlingException extends Exception {
+        public RequestHandlingException(String message) {
+            super(message);
+        }
+    }
+
+    void request_book(ReservationRequest rRequest) {
+        this.rRequests.addLast(rRequest);
+    }
+
+    void process_requests() throws RequestHandlingException {
+        for (var rRequest : this.rRequests) {
+            Long checksum = ChecksumUtil.computeCRC32(rRequest.getBook());
+            if (this.books.containsKey(checksum)) {
+                BookInstance book = this.books.get(checksum);
+                try {
+                    book.deduct();
+                } catch (BookInstance.DeductionException e) {
+                    this.unattendedRequests.add(book);
+                }
+            } else {
+                this.problemsOccurred = true;
+                throw new RequestHandlingException(
+                        "'" + rRequest.getSolicitor() + "' requested a book not present in the catalog\n" + rRequest.getBook());
+            }
+        }
+        this.rRequests = null;
+    }
+
+    void printReservationReport() {
+        if (!this.problemsOccurred && this.unattendedRequests.isEmpty()) {
+            System.out.println(
+                    ANSICodes.BOLD + "All requests handled successfully!" + ANSICodes.RESET);
+        }
+        if (!this.unattendedRequests.isEmpty()) {
+            System.out.println(
+                    ANSICodes.BOLD + "Some requests were not fulfilled due to insufficient stock" + ANSICodes.RESET);
+            System.out.println("The following books need to be purchased");
+            for (Book book : this.unattendedRequests) {
+                System.out.println(book);
+            }
+        }
+    }
+}
+
+
+class Book {
+    protected String title;
+    protected String author;
+
+    public Book(String title, String author) {
+        this.title = title;
+        this.author = author;
+    }
+
+    @Override
+    public String toString() {
+        return ANSICodes.DIM + "Title: " + this.title + "\nAuthor: " + this.author + ANSICodes.RESET;
+    }
+}
+
+
+class BookInstance extends Book {
+    private int sample_q;
+
+    class DeductionException extends Exception {
+        public DeductionException(String message) {
+            super(message);
+        }
+    }
+
+    public BookInstance(String title, String author, int sample_q) {
+        super(title, author);
+        this.sample_q = sample_q;
+    }
+
+    void deduct() throws DeductionException {
+        if (this.sample_q == 0)
+            throw new DeductionException("Can't deduct non-existent quantity of books");
+        this.sample_q--;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+}
+
+
+public class CP01_EJ02 {
+
+    public static void main(String[] args) {
+        // Create library
+        Library library =
+                new Library(
+                        new BookInstance[] {
+                                new BookInstance("1984", "George Orwell", 1),
+                                new BookInstance("Brave New World", "Aldous Huxley", 0),
+                                new BookInstance("Fahrenheit 451", "Ray Bradbury", 2)});
+
+        // Submit requests
+        library.request_book(new ReservationRequest("Alice", new Book("1984", "George Orwell")));
+        library.request_book(
+                new ReservationRequest("Charlie", new Book("Fahrenheit 451", "Ray Bradbury")));
+        switch (Controller.TRIGGER_CASE) {
+            case 1:
+                library.request_book(
+                        new ReservationRequest(
+                                "Bob", new Book("Brave New World", "Aldous Huxley")));
+                break;
+
+            case 2:
+                library.request_book(
+                        new ReservationRequest("Dave", new Book("The Hobbit", "J.R.R. Tolkien")));
+                break;
+        }
+
+        // Process requests
+        try {
+            library.process_requests();
+        } catch (Library.RequestHandlingException e) {
+            System.out.println(
+                    ANSICodes.BOLD + "The following requests were problematic" + ANSICodes.RESET);
+            System.out.println(e.getMessage());
+        }
+        library.printReservationReport();
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/CP/CP02_EJ04.java">
+package com.yuuhikaze.ed202510.CP;
+
+import com.yuuhikaze.ed202510.TDA.SLLQueue;
+import com.yuuhikaze.ed202510.utils.ANSICodes;
+
+enum ClientType {
+    VIP, Peasant,
+}
+
+
+class Reservation {
+    private long ID;
+    private String name;
+    private String hotel;
+    private int room;
+    private ClientType clientType;
+    private long time;
+
+    public Reservation(
+            long ID, String name, String hotel, int room, ClientType clientType, long time) {
+        this.ID = ID;
+        this.name = name;
+        this.hotel = hotel;
+        this.room = room;
+        this.clientType = clientType;
+        this.time = time;
+    }
+
+    public ClientType getClientType() {
+        return clientType;
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation attended!\n" + ANSICodes.DIM + "ID=" + ID + "\nname=" + name + "\nhotel=" + hotel + "\nroom=" + room + "\nclientType="
+                + clientType + "\ntime=" + time + ANSICodes.RESET;
+    }
+}
+
+
+class ReservationSystem {
+    SLLQueue<Reservation> peasants;
+    SLLQueue<Reservation> landlords;
+
+    public ReservationSystem() {
+        this.peasants = new SLLQueue<>();
+        this.landlords = new SLLQueue<>();
+    }
+
+    public void addReservation(Reservation reservation) {
+        switch (reservation.getClientType()) {
+            case ClientType.VIP:
+                landlords.enqueue(reservation);
+                break;
+            case ClientType.Peasant:
+                peasants.enqueue(reservation);
+                break;
+        }
+    }
+
+    public void attendReservations() {
+        while (!this.landlords.isEmpty()) {
+            System.out.println(this.landlords.dequeue());
+        }
+        while (!this.peasants.isEmpty()) {
+            System.out.println(this.peasants.dequeue());
+        }
+    }
+}
+
+
+public class CP02_EJ04 {
+
+    public static void main(String[] args) {
+        System.out.println("Welcome to Hilton Hotel Chain!");
+        System.out.println("Reservations here ↓");
+
+        ReservationSystem system = new ReservationSystem();
+
+        Reservation res1 =
+                new Reservation(1L, "Alice", "Hilton Garden", 101, ClientType.VIP, 163800L);
+        Reservation res2 =
+                new Reservation(2L, "Bob", "Hilton Grand", 202, ClientType.Peasant, 16400L);
+        Reservation res3 =
+                new Reservation(3L, "Charlie", "Hilton Resort", 303, ClientType.VIP, 20000L);
+        Reservation res4 =
+                new Reservation(4L, "Diana", "Hilton Plaza", 404, ClientType.Peasant, 33023L);
+        Reservation res5 = new Reservation(5L, "Eve", "Hilton Suites", 505, ClientType.VIP, 27200L);
+        Reservation res6 =
+                new Reservation(6L, "Frank", "Hilton Inn", 606, ClientType.Peasant, 30800L);
+
+        system.addReservation(res1);
+        system.addReservation(res2);
+        system.addReservation(res3);
+        system.addReservation(res4);
+        system.addReservation(res5);
+        system.addReservation(res6);
+
+        system.attendReservations();
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/E/E01.java">
+package com.yuuhikaze.ed202510.E;
+
+import com.yuuhikaze.ed202510.TDA.SLLQueue;
+import com.yuuhikaze.ed202510.utils.ANSICodes;
+import java.util.Random;
+
+class CallCenter {
+    private Operator[] operatorsPool;
+    private SLLQueue<Client> clientCalls;
+
+    public CallCenter(Operator[] operatorsPool) {
+        this.operatorsPool = operatorsPool;
+        this.clientCalls = new SLLQueue<Client>();
+    }
+
+    public void addClient(Client client) {
+        this.clientCalls.enqueue(client);
+    }
+
+    public void attendClients() {
+        while (this.clientCalls.size() != 0) {
+            Operator currentOperator = getRandomOperator();
+            currentOperator.attendClient(this.clientCalls.dequeue());
+        }
+    }
+    
+    public void printReport() {
+        for (Operator operator : operatorsPool) {
+            operator.printAttendedClients();
+        }
+    }
+
+    private Operator getRandomOperator() {
+        Random random = new Random();
+        int randomOperatorIndex = Math.abs(random.nextInt()) % this.operatorsPool.length;
+        if (!this.operatorsPool[randomOperatorIndex].isAvailable()) {
+            /* System.out.println(
+                    "Operator [↓] is not available, forwarding call to another member of the call"
+                            + " center");
+            System.out.println(this.operatorsPool[randomOperatorIndex]); */
+            // too much spam
+            return getRandomOperator();
+        }
+        return this.operatorsPool[randomOperatorIndex];
+    }
+}
+
+
+enum Reason {
+    TechnicalSupport, BillPayment, ServicePlanChange,
+}
+
+
+class Operator {
+    private String name;
+    private long ID;
+    private boolean available; // can the operator attend requests
+    private SLLQueue<Client> clientsAttended;
+
+    public Operator(String name, long iD, boolean available) {
+        this.name = name;
+        ID = iD;
+        this.available = available;
+        this.clientsAttended = new SLLQueue<Client>();
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void attendClient(Client client) {
+        clientsAttended.enqueue(client);
+    }
+
+    public void printAttendedClients() {
+        if (this.clientsAttended.size() == 0)
+            return;
+        System.out.println(
+                "Hi! I'm " + ANSICodes.BOLD + this.name + ANSICodes.RESET + " it was a pleasure attending the following clients");
+        for (Client client : clientsAttended) {
+            System.out.println(client);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return ANSICodes.DIM + "name=" + name + ", ID=" + ID + ANSICodes.RESET;
+    }
+}
+
+
+class Client {
+    private String name;
+    private Reason reason;
+    private String phoneNumber;
+
+    public Client(String name, Reason reason, String phoneNumber) {
+        this.name = name;
+        this.reason = reason;
+        this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public String toString() {
+        return ANSICodes.DIM + "name=" + name + ", reason=" + reason + ", phoneNumber=" + phoneNumber + ANSICodes.RESET;
+    }
+}
+
+
+public class E01 {
+
+    public static void main(String[] args) {
+        // Generate a pool of operators
+        Operator[] operatorsPool = new Operator[] {
+            new Operator("Oscar", 128091820, true),
+            new Operator("Alice", 724091123, false),
+            new Operator("Charlie", 538291810, true),
+        };
+        // Instantiate call center
+        CallCenter callCenter = new CallCenter(operatorsPool);
+        // Submit requests
+        callCenter.addClient(new Client("Bob", Reason.ServicePlanChange, "+593 99 819 2189"));
+        callCenter.addClient(new Client("John", Reason.TechnicalSupport, "+593 99 859 3181"));
+        callCenter.addClient(new Client("Diana", Reason.ServicePlanChange, "+593 99 219 4209"));
+        callCenter.addClient(new Client("Frank", Reason.BillPayment, "+593 99 536 0909"));
+        callCenter.addClient(new Client("Max", Reason.BillPayment, "+593 99 596 2581"));
+        callCenter.addClient(new Client("Bruno", Reason.TechnicalSupport, "+593 99 214 7863"));
+        // Attend requests
+        callCenter.attendClients(); // O(n)
+        callCenter.printReport();
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI03_Browser_Controller.java">
+package com.yuuhikaze.ed202510.EI;
+
+import com.yuuhikaze.ed202510.TDA.DoublyLinkedList;
+import java.util.Iterator;
+
+class BrowserController<E> {
+    private DoublyLinkedList<E> tabs;
+
+    public BrowserController() {
+        this.tabs = new DoublyLinkedList<>();
+    }
+
+    public void openTab(E tab) {
+        tabs.addLast(tab);
+    }
+
+    public void closeFirstTab() {
+        tabs.removeFirst();
+    }
+
+    public void closeLastTab() {
+        tabs.removeLast();
+    }
+
+    public void printTabs() {
+        for (var elem : this.tabs) {
+            System.out.print(elem);
+        }
+    }
+
+    public void printTabsReversed() {
+        for (Iterator<E> it = this.tabs.reverseIterator(); it.hasNext(); ) {
+            System.out.print(it.next());
+        }
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI03_Main.java">
+package com.yuuhikaze.ed202510.EI;
+
+public class EI03_Main {
+    public static void main(String[] args) {
+        Tab tab1 = new Tab("arXiv", "https://arxiv.org/");
+        Tab tab2 = new Tab("StackOverflow", "https://stackoverflow.com/");
+        Tab tab3 = new Tab("YouTube", "https://youtube.com/");
+        Tab tab4 = new Tab("GitHub", "https://github.com/");
+
+        BrowserController<Tab> browser = new BrowserController<>();
+        browser.openTab(tab1);
+        browser.openTab(tab2);
+        browser.openTab(tab3);
+        browser.openTab(tab4);
+
+        System.out.println("All open tabs:");
+        browser.printTabs();
+
+        System.out.println("\nClosing last tab...\n");
+        browser.closeLastTab();
+
+        System.out.println("Reversed tab view (most recent first):");
+        browser.printTabsReversed();
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/SLLQueue.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import com.yuuhikaze.ed202510.TDA.interfaces.Queue;
+
+/**
+ * A queue implementation adapting SinglyLinkedList and implementing Queue interface.
+ */
+public class SLLQueue<E> implements Queue<E> {
+    private final SinglyLinkedList<E> list = new SinglyLinkedList<>();
+
+    @Override
+    public void enqueue(E element) {
+        list.addLast(element);
+    }
+
+    @Override
+    public E dequeue() {
+        if (list.isEmpty()) {
+            throw new NoSuchElementException("Queue is empty");
+        }
+        return list.removeFirst();
+    }
+
+    @Override
+    public E first() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("Queue is empty");
+        }
+        return list.first();
+    }
+
+    @Override
+    public int size() {
+        return this.list.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.list.isEmpty();
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return list.iterator();
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/SLLStack.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import com.yuuhikaze.ed202510.TDA.interfaces.Stack;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+/**
+ * A stack implementation adapting SinglyLinkedList and implementing Stack interface.
+ */
+public class SLLStack<E> implements Stack<E>, Iterable<E> {
+    private final SinglyLinkedList<E> list = new SinglyLinkedList<>();
+
+    @Override
+    public void push(E element) {
+        list.addFirst(element);
+    }
+
+    @Override
+    public E pop() {
+        if (list.isEmpty()) {
+            throw new NoSuchElementException("Stack is empty");
+        }
+        return list.removeFirst();
+    }
+
+    @Override
+    public E top() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("Stack is empty");
+        }
+        return list.first();
+    }
+
+    @Override
+    public int size() {
+        return this.list.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return list.iterator();
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI01_Main.java">
+package com.yuuhikaze.ed202510.EI;
+
+public class EI01_Main {
+
+    public static void main(String[] args) {
+        Lion lion = new Lion();
+        Zebra zebra = new Zebra();
+        Frog frog = new Frog();
+        Horse horse = new Horse();
+        ZooController<Object> zoo = new ZooController<Object>();
+        zoo.addAnimalFirst(lion);
+        zoo.addAnimalFirst(zebra);
+        zoo.addAnimalLast(frog);
+        zoo.addAnimalLast(horse);
+        System.out.print(zoo);
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI02_Customer_Controller.java">
+package com.yuuhikaze.ed202510.EI;
+
+import com.yuuhikaze.ed202510.TDA.SLLQueue;
+
+class CustomerController {
+    private SLLQueue<CustomerEntity> customerQueue;
+
+    public CustomerController() {
+        this.customerQueue = new SLLQueue<>();
+    }
+
+    public void addCustomer(CustomerEntity customer) {
+        customerQueue.enqueue(customer);
+    }
+
+    public CustomerEntity serveCustomer() {
+        return customerQueue.dequeue();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder("Customers in queue:\n");
+        boolean isFirst = true;
+        for (CustomerEntity customer : customerQueue) {
+            if (isFirst) {
+                result.append("[FRONT/FIRST] ").append(customer).append("\n");
+                isFirst = false;
+            } else {
+                result.append("              ").append(customer).append("\n");
+            }
+        }
+        if (isFirst) {
+            result.append("(Queue is empty)\n");
+        }
+        return result.toString();
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/EI/EI02_Task_Controller.java">
+package com.yuuhikaze.ed202510.EI;
+
+import com.yuuhikaze.ed202510.TDA.SLLStack;
+
+class TaskController {
+    private SLLStack<TaskEntity> taskStack;
+
+    public TaskController() {
+        this.taskStack = new SLLStack<>();
+    }
+
+    public void addTask(TaskEntity task) {
+        taskStack.push(task);
+    }
+
+    public TaskEntity removeTask() {
+        return taskStack.pop();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder("Tasks in stack:\n");
+        boolean isTop = true;
+        for (TaskEntity task : taskStack) {
+            if (isTop) {
+                result.append("[TOP/LAST]  ").append(task).append("\n");
+                isTop = false;
+            } else {
+                result.append("            ").append(task).append("\n");
+            }
+        }
+        if (isTop) {
+            result.append("(Stack is empty)\n");
+        }
+        return result.toString();
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/interfaces/Position.java">
+package com.yuuhikaze.ed202510.TDA.interfaces;
+
+/**
+ * A generic interface representing a position in a LinkedList
+ *
+ * @param <E> type of element the position references
+ */
+public interface Position<E> {
+
+    /**
+     * Returns the element stored at this position
+     *
+     * @return the stored element
+     * @throws IllegalStateException if position is no longer valid
+     */
+    E getElement() throws IllegalStateException;
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/interfaces/PositionalList.java">
+package com.yuuhikaze.ed202510.TDA.interfaces;
+
+/**
+ * A generic interface representing a sequence of elements characterized by positions
+ *
+ * @param <E> type of elements in the list
+ */
+public interface PositionalList<E> extends Iterable<Position<E>> {
+
+    // O(1)
+    /**
+     * Returns the number of elements in list
+     *
+     * @return number of elements in list
+     */
+    int size();
+
+    // O(1)
+    /**
+     * Checks whether list contains no elements
+     *
+     * @return {@code true} if list empty, {@code false} otherwise
+     */
+    boolean isEmpty();
+
+    // O(1)
+    /**
+     * Returns the first position in the list
+     *
+     * @return first position in the list, or {@code null} if empty
+     */
+    Position<E> first();
+
+    // O(1)
+    /**
+     * Returns the last position in the list
+     *
+     * @return last position in the list, or {@code null} if empty
+     */
+    Position<E> last();
+
+    // O(1)
+    /**
+     * Returns position before given position
+     *
+     * @param p represents a position
+     * @return position before p, or {@code null} if empty
+     * @throws IllegalArgumentException TODO
+     */
+    Position<E> before(Position<E> position) throws IllegalArgumentException;
+
+    // O(1)
+    /**
+     * Returns position after given position
+     *
+     * @param p represents a position
+     * @return position after p, or {@code null} if empty
+     * @throws IllegalArgumentException TODO
+     */
+    Position<E> after(Position<E> position) throws IllegalArgumentException;
+
+    // O(1)
+    /**
+     * Adds element at the front of the list and returns its new position
+     *
+     * @param element is the entity to add
+     * @return the new position of the added element
+     */
+    Position<E> addFirst(E element);
+
+    // O(1)
+    /**
+     * Adds element at the back of the list and returns its new position
+     *
+     * @param element is the entity to add
+     * @return the new position of the added element
+     */
+    Position<E> addLast(E element);
+
+    // O(1)
+    /**
+     * Adds element before given position and returns its new position
+     *
+     * @param position is the given position
+     * @param element is the entity to add
+     * @return the new position of the added element
+     */
+    Position<E> addBefore(Position<E> position, E element);
+
+    // O(1)
+    /**
+     * Adds element after given position and returns its new position
+     *
+     * @param position is the given position
+     * @param element is the entity to add
+     * @return the new position of the added element
+     */
+    Position<E> addAfter(Position<E> position, E element);
+
+    // O(1)
+    /**
+     * Replaces the element at given position with provided element
+     *
+     * @param position is the given position
+     * @param element is the element to be set in-place
+     * @return the replaced element
+     * @throws IllegalArgumentException TODO
+     */
+    E set(Position<E> position, E element) throws IllegalArgumentException;
+
+    // O(1)
+    /**
+     * Removes element at given position
+     *
+     * @param position is the given position
+     * @return the removed element
+     * @throws IllegalArgumentException TODO
+     */
+    E remove(Position<E> position) throws IllegalArgumentException;
+}
+</file>
+
+<file path="src/test/java/com/yuuhikaze/ed202510/TDA/SLLQueueTest.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.NoSuchElementException;
+
+class SSLQueueTest {
+
+    @Test
+    void testEnqueueDequeue() {
+        SLLQueue<Integer> queue = new SLLQueue<>();
+
+        // Test enqueue
+        queue.enqueue(10);
+        queue.enqueue(20);
+        queue.enqueue(30);
+        assertEquals(10, queue.first());
+        assertFalse(queue.isEmpty());
+        assertEquals(3, queue.size());
+
+        // Test dequeue
+        assertEquals(10, queue.dequeue());
+        assertEquals(20, queue.dequeue());
+        assertEquals(30, queue.dequeue());
+        assertTrue(queue.isEmpty());
+    }
+
+    @Test
+    void testDequeueFromEmptyQueue() {
+        SLLQueue<Integer> queue = new SLLQueue<>();
+
+        // Test dequeue on empty queue
+        assertThrows(NoSuchElementException.class, queue::dequeue);
+    }
+
+    @Test
+    void testFirstOnEmptyQueue() {
+        SLLQueue<Integer> queue = new SLLQueue<>();
+
+        // Test first on empty queue
+        assertThrows(NoSuchElementException.class, queue::first);
+    }
+}
+</file>
+
+<file path="src/test/java/com/yuuhikaze/ed202510/TDA/SLLStackTest.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.NoSuchElementException;
+
+class SSLStackTest {
+
+    @Test
+    void testPushPop() {
+        SLLStack<Integer> stack = new SLLStack<>();
+
+        // Test push
+        stack.push(10);
+        stack.push(20);
+        stack.push(30);
+        assertEquals(30, stack.top());
+        assertFalse(stack.isEmpty());
+        assertEquals(3, stack.size());
+
+        // Test pop
+        assertEquals(30, stack.pop());
+        assertEquals(20, stack.pop());
+        assertEquals(10, stack.pop());
+        assertTrue(stack.isEmpty());
+    }
+
+    @Test
+    void testPopFromEmptyStack() {
+        SLLStack<Integer> stack = new SLLStack<>();
+
+        // Test pop on empty stack
+        assertThrows(NoSuchElementException.class, stack::pop);
+    }
+
+    @Test
+    void testTopOnEmptyStack() {
+        SLLStack<Integer> stack = new SLLStack<>();
+
+        // Test top on empty stack
+        assertThrows(NoSuchElementException.class, stack::top);
+    }
+}
+</file>
+
+<file path=".gitignore">
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/DoublyLinkedList.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import java.util.Iterator;
+
+public class DoublyLinkedList<E> implements Iterable<E> {
+    private class Node<I> {
+        private E element;
+        private Node<I> previous;
+        private Node<I> next;
+
+        public Node(E element, Node<I> previous, Node<I> next) {
+            this.element = element;
+            this.previous = previous;
+            this.next = next;
+        }
+
+        public E getElement() {
+            return element;
+        }
+
+        public Node<I> getPrevious() {
+            return previous;
+        }
+
+        public Node<I> getNext() {
+            return next;
+        }
+
+        public void setPrevious(Node<I> previous) {
+            this.previous = previous;
+        }
+
+        public void setNext(Node<I> next) {
+            this.next = next;
+        }
+    }
+
+    private Node<E> header;
+    private Node<E> trailer;
+    private int size;
+
+    public DoublyLinkedList() {
+        this.header = new Node<E>(null, null, null);
+        this.trailer = new Node<E>(null, this.header, null);
+        this.header.setNext(this.trailer);
+    }
+
+    private void addBetween(E element, Node<E> predecessor, Node<E> successor) {
+        Node<E> node = new Node<>(element, predecessor, successor);
+        predecessor.setNext(node);
+        successor.setPrevious(node);
+        this.size++;
+    }
+
+    private E remove(Node<E> candidate) {
+        E element = candidate.getElement();
+        Node<E> predecessor = candidate.getPrevious();
+        Node<E> successor = candidate.getNext();
+        predecessor.setNext(successor);
+        successor.setPrevious(predecessor);
+        this.size--;
+        return element;
+    }
+
+    // removes given element O(n)
+    public E removeElement(E element) {
+        var currentNode = header;
+        E currentElement = null;
+        while (currentNode != null) {
+            currentNode = currentNode.getNext();
+            currentElement = currentNode.getElement();
+            if (currentElement == element) {
+                currentNode.getPrevious().setNext(currentNode.getNext());
+                currentNode.getNext().setPrevious(currentNode.getPrevious());
+            }
+        }
+        return currentElement;
+    }
+
+    // checks if given element exists O(n)
+    public boolean contains(E element) {
+        var currentNode = header;
+        boolean result = false;
+        while (currentNode != null) {
+            currentNode = currentNode.getNext();
+            if (currentNode.getElement() == element) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    public void addFirst(E element) {
+        addBetween(element, this.header, this.header.getNext());
+    }
+
+    public void addLast(E element) {
+        addBetween(element, this.trailer.getPrevious(), this.trailer);
+    }
+
+    public E removeFirst() {
+        if (isEmpty())
+            return null;
+        return remove(this.header.getNext());
+    }
+
+    public E removeLast() {
+        if (isEmpty())
+            return null;
+        return remove(this.trailer.getPrevious());
+    }
+
+    public E first() {
+        if (isEmpty())
+            return null;
+        return this.header.getNext().getElement();
+    }
+
+    public E last() {
+        if (isEmpty())
+            return null;
+        return this.trailer.getPrevious().getElement();
+    }
+
+    public int size() {
+        return this.size;
+    }
+
+    public boolean isEmpty() {
+        return this.size == 0;
+    }
+
+    private class DLLIterator implements Iterator<E> {
+        private Node<E> current;
+        private final boolean reverse;
+
+        public DLLIterator(boolean reverse) {
+            this.reverse = reverse;
+            this.current = reverse ? trailer.getPrevious() : header.getNext();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return reverse ? current != header : current != trailer;
+        }
+
+        @Override
+        public E next() {
+            if (!hasNext())
+                throw new java.util.NoSuchElementException();
+            E element = current.getElement();
+            current = reverse ? current.getPrevious() : current.getNext();
+            return element;
+        }
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return new DLLIterator(false);
+    }
+
+    public Iterator<E> reverseIterator() {
+        return new DLLIterator(true);
+    }
+}
+</file>
+
+<file path="src/main/java/com/yuuhikaze/ed202510/TDA/SinglyLinkedList.java">
+package com.yuuhikaze.ed202510.TDA;
+
+import java.util.Iterator;
+
+public class SinglyLinkedList<E> implements Iterable<E> {
+    private class Node<I> {
+        private I element;
+        private Node<I> next;
+
+        public Node(I element, Node<I> next) {
+            this.element = element;
+            this.next = next;
+        }
+
+        /**
+         * Returns next node
+         */
+        public Node<I> getNext() {
+            return this.next;
+        }
+
+        /**
+         * Sets next node
+         */
+        public void setNext(Node<I> next) {
+            this.next = next;
+        }
+
+        /**
+         * Gets element/value of node
+         */
+        public I getElement() {
+            return this.element;
+        }
+    }
+    private Node<E> head;
+    private Node<E> tail;
+    private int size;
+
+    public SinglyLinkedList() {
+        this.head = null;
+        this.tail = null;
+        this.size = 0;
+    }
+
+    /**
+     * Inserts an element to the start of the Singly Linked List
+     */
+    public void addFirst(E element) {
+        this.head = new Node<>(element, this.head);
+        if (isEmpty())
+            this.tail = this.head;
+        this.size++;
+    }
+
+    /**
+     * Inserts an element to the end of the Singly Linked List
+     */
+    public void addLast(E element) {
+        Node<E> tail = new Node<>(element, null);
+        if (isEmpty()) {
+            this.head = tail;
+        } else {
+            this.tail.setNext(tail);
+        }
+        this.tail = tail;
+        this.size++;
+    }
+
+    /**
+     * Returns the size of the collection
+     */
+    public int size() {
+        return this.size;
+    }
+
+    /**
+     * Returns true if the collection is empty, otherwise, false
+     */
+    public boolean isEmpty() {
+        return this.size == 0;
+    }
+
+    /**
+     * Returns the first element
+     */
+    public E first() {
+        if (isEmpty())
+            return null;
+        return this.head.getElement();
+    }
+
+    /**
+     * Returns the last element
+     */
+    public E last() {
+        if (isEmpty())
+            return null;
+        return this.tail.getElement();
+    }
+
+    /**
+     * Removes and returns the first element from the collection
+     */
+    public E removeFirst() {
+        if (isEmpty())
+            return null;
+        E element = this.head.getElement();
+        this.head = this.head.getNext();
+        this.size--;
+        if (isEmpty())
+            this.tail = null;
+        return element;
+        // GC automatically disposes the first node since it no longer is referenced
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+            private Node<E> current = head;
+
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public E next() {
+                if (current == null) {
+                    throw new java.util.NoSuchElementException();
+                }
+                E data = current.getElement();
+                current = current.getNext();
+                return data;
+            }
+        };
+    }
+}
+</file>
+
+<file path="build.gradle">
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.yuuhikaze'
+version = '0.1.0'
+
+def _mainClass = 'com.yuuhikaze.ed202510.CP.CP04_EJ01'
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+application {
+    mainClass.set(_mainClass)
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': _mainClass
+        )
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+// dependencies {
+// }
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.13.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+    useJUnitPlatform()
+}
+</file>
+
+</files>

@@ -1,5 +1,6 @@
 package com.yuuhikaze.ed202510.TDA;
 
+import java.util.Iterator;
 import com.yuuhikaze.ed202510.TDA.interfaces.Position;
 import com.yuuhikaze.ed202510.TDA.interfaces.PositionalList;
 
@@ -39,8 +40,8 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
             this.previous = previous;
         }
 
-        public void setNext(Node<E> previous) {
-            this.previous = previous;
+        public void setNext(Node<E> next) {
+            this.next = next;
         }
     }
 
@@ -76,7 +77,7 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
      * @param node TODO
      * @return node as position, or {@code null} if it is a sentinel
      */
-    private Position<E> node_as_position(Node<E> node) {
+    private Position<E> nodeAsPosition(Node<E> node) {
         if (node == header || node == trailer)
             return null;
         return node;
@@ -94,24 +95,24 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
 
     @Override
     public Position<E> first() {
-        return node_as_position(header.getNext());
+        return nodeAsPosition(header.getNext());
     }
 
     @Override
     public Position<E> last() {
-        return node_as_position(trailer.getPrevious());
+        return nodeAsPosition(trailer.getPrevious());
     }
 
     @Override
     public Position<E> before(Position<E> position) throws IllegalArgumentException {
         Node<E> node = validate(position);
-        return node_as_position(node.getPrevious());
+        return nodeAsPosition(node.getPrevious());
     }
 
     @Override
     public Position<E> after(Position<E> position) throws IllegalArgumentException {
         Node<E> node = validate(position);
-        return node_as_position(node.getNext());
+        return nodeAsPosition(node.getNext());
     }
 
     private Position<E> addBetween(E element, Node<E> predecessor, Node<E> successor) {
@@ -166,5 +167,25 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
         node.setNext(null);
         node.setPrevious(null);
         return tmp;
+    }
+
+    @Override
+    public Iterator<Position<E>> iterator() {
+        return new Iterator<Position<E>>() {
+            private Position<E> current = nodeAsPosition(header.getNext());
+
+            @Override
+            public boolean hasNext() {
+                return after(current) != null;
+            }
+
+            @Override
+            public Position<E> next() {
+                Position<E> tmp = current;
+                current = after(current);
+                return tmp;
+            }
+            
+        };
     }
 }

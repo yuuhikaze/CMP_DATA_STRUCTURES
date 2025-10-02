@@ -7,7 +7,7 @@ import com.yuuhikaze.ed202510.TDA.interfaces.Queue;
 /**
  * A queue implementation adapting SinglyLinkedList and implementing Queue interface.
  */
-public class SLLQueue<E> implements Queue<E>, Iterable<E> {
+public class SLLQueue<E> implements Queue<E> {
     private final SinglyLinkedList<E> list = new SinglyLinkedList<>();
 
     @Override

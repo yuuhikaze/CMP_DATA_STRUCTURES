@@ -3,7 +3,7 @@ package com.yuuhikaze.ed202510.TDA.interfaces;
 /**
  * A generic Queue interface defining standard queue operations.
  */
-public interface Queue<E> {
+public interface Queue<E> extends Iterable<E> {
     /**
      * Adds an element to the rear of the queue.
      */

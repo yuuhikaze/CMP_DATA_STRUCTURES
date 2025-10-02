@@ -5,7 +5,7 @@ package com.yuuhikaze.ed202510.TDA.interfaces;
  *
  * @param <E> type of elements in the list
  */
-public interface PositionalList<E> {
+public interface PositionalList<E> extends Iterable<Position<E>> {
 
     // O(1)
     /**

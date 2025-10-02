@@ -1,20 +1,23 @@
 package com.yuuhikaze.ed202510.TDA;
 
-import com.yuuhikaze.ed202510.TDA.interfaces.List;
 import com.yuuhikaze.ed202510.TDA.interfaces.Position;
+import com.yuuhikaze.ed202510.TDA.interfaces.Queue;
 import com.yuuhikaze.ed202510.TDA.interfaces.Tree;
 import java.util.Iterator;
 
 public class AbstractTree<E> implements Tree<E> {
-    
+
     private class ElementIterator implements Iterator<E> {
         Iterator<Position<E>> positionIterator = positions().iterator();
+
         public boolean hasNext() {
             return positionIterator.hasNext();
         }
+
         public E next() {
             return positionIterator.next().getElement();
         }
+
         public void remove() {
             positionIterator.remove();
         }
@@ -79,8 +82,7 @@ public class AbstractTree<E> implements Tree<E> {
 
     @Override
     public Iterable<Position<E>> positions() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'positions'");
+        return postorder();
     }
 
     // O(n)
@@ -99,7 +101,51 @@ public class AbstractTree<E> implements Tree<E> {
         return height;
     }
 
-    private void preorderSubtree(Position<E> position, List<Position<E>> snapshot) {
-        snapshot.add(position);
+    public Iterable<Position<E>> preorder() {
+        Queue<Position<E>> snapshot = new SLLQueue<>();
+        if (!isEmpty())
+            preorderSubtree(root(), snapshot);
+        return snapshot;
+    }
+
+    private void preorderSubtree(Position<E> position, Queue<Position<E>> snapshot) {
+        snapshot.enqueue(position);
+        for (Position<E> child : children(position)) {
+            preorderSubtree(child, snapshot);
+        }
+    }
+
+    public Iterable<Position<E>> postorder() {
+        Queue<Position<E>> snapshot = new SLLQueue<>();
+        if (!isEmpty())
+            postorderSubtree(root(), snapshot);
+        return snapshot;
+    }
+
+    private void postorderSubtree(Position<E> position, Queue<Position<E>> snapshot) {
+        for (Position<E> child : children(position)) {
+            postorderSubtree(child, snapshot);
+        }
+        snapshot.enqueue(position);
+    }
+
+    public Iterable<Position<E>> breadthFirst() {
+        Queue<Position<E>> snapshot = new SLLQueue<>();
+        if (!isEmpty())
+            breadthFirstSubtree(root(), snapshot);
+        return snapshot;
+    }
+
+    // Tree must be balanced (hypothesis)
+    private void breadthFirstSubtree(Position<E> position, Queue<Position<E>> snapshot) {
+        Queue<Position<E>> layers = new SLLQueue<Position<E>>();
+        layers.enqueue(position);
+        while (!layers.isEmpty()) {
+            Position<E> currentLayer = layers.dequeue();
+            snapshot.enqueue(currentLayer);
+            for (Position<E> child : children(currentLayer)) {
+                layers.enqueue(child);
+            }
+        }
     }
 }

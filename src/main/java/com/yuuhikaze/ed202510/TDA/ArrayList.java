@@ -1,5 +1,6 @@
 package com.yuuhikaze.ed202510.TDA;
 
+import java.util.Iterator;
 import com.yuuhikaze.ed202510.TDA.interfaces.List;
 
 public class ArrayList<E> implements List<E> {
@@ -73,5 +74,11 @@ public class ArrayList<E> implements List<E> {
     protected void checkIndex(int i, int n) throws IndexOutOfBoundsException {
         if (i < 0 || i >= n)
             throw new IndexOutOfBoundsException("Illegal index");
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'iterator'");
     }
 }

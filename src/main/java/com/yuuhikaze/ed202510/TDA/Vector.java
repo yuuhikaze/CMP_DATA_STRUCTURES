@@ -3,7 +3,7 @@ package com.yuuhikaze.ed202510.TDA;
 import java.util.Iterator;
 import com.yuuhikaze.ed202510.TDA.interfaces.List;
 
-public class Vector<E> implements List<E>, Iterable<E> {
+public class Vector<E> implements List<E> {
 
     private static final int DEFAULT_CAPACITY = 16;
     private E[] data;
