@@ -22,6 +22,10 @@ public class TreeMap<K, V> extends AbstractSortedMap<K, V> {
         return (tree.size() - 1) / 2;
     }
 
+    public boolean isEmpty() {
+        return size() == 0;
+    }
+
     private void expandExternal(Position<Entry<K, V>> p, Entry<K, V> entry) {
         tree.set(p, entry);
         tree.addLeft(p, null);
@@ -222,7 +226,7 @@ public class TreeMap<K, V> extends AbstractSortedMap<K, V> {
 
     @Override
     public Iterable<Entry<K, V>> subMap(K fromKey, K toKey) throws IllegalArgumentException {
-        ArrayList<Entry<K, V>> buffer = new ArrayList<>(size());
+        Vector<Entry<K, V>> buffer = new Vector<>();
         if (compare(fromKey, toKey) < 0) // ensure that fromKey < toKey
             subMapRecurse(fromKey, toKey, root(), buffer);
         return buffer;
@@ -239,7 +243,7 @@ public class TreeMap<K, V> extends AbstractSortedMap<K, V> {
 
     @Override
     public Iterable<Entry<K, V>> entrySet() {
-        ArrayList<Entry<K, V>> buffer = new ArrayList<>(size());
+        Vector<Entry<K, V>> buffer = new Vector<>();
         for (Position<Entry<K, V>> p : tree.inorder())
             if (isInternal(p))
                 buffer.add(p.getElement());
@@ -248,7 +252,7 @@ public class TreeMap<K, V> extends AbstractSortedMap<K, V> {
 
     // UTILITIES
     private void subMapRecurse(
-            K fromKey, K toKey, Position<Entry<K, V>> p, ArrayList<Entry<K, V>> buffer) {
+            K fromKey, K toKey, Position<Entry<K, V>> p, Vector<Entry<K, V>> buffer) {
         if (isInternal(p))
             if (compare(p.getElement(), fromKey) < 0)
                 // p's key is less than fromKey, so any relevant entries are to the right
