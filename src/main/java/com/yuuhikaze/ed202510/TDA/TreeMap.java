@@ -119,6 +119,10 @@ public class TreeMap<K, V> extends AbstractSortedMap<K, V> {
         return null;
     }
 
+    public Position<Entry<K, V>> treeSearch(K key) {
+        return treeSearch(root(), key);
+    }
+
     // O(log(n))
     // Binary search
     private Position<Entry<K, V>> treeSearch(Position<Entry<K, V>> p, K key) {
@@ -306,7 +310,7 @@ public class TreeMap<K, V> extends AbstractSortedMap<K, V> {
             position = parent(position);
         } while (oldHeight != newHeight && position != null);
     }
-    
+
     /**
      * Rebalances the tree after an insertion of specified position. This version of the method does not
      * do anything, but it can be overridden by subclasses.
