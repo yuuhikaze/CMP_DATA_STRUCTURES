@@ -176,8 +176,9 @@ public class TreeMap<K, V> extends AbstractSortedMap<K, V> {
 
     @Override
     public Entry<K, V> firstEntry() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'firstEntry'");
+        if (isEmpty())
+            return null;
+        return treeMin(root()).getElement();
     }
 
     @Override
@@ -189,8 +190,10 @@ public class TreeMap<K, V> extends AbstractSortedMap<K, V> {
 
     @Override
     public Entry<K, V> ceilingEntry(K key) throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'ceilingEntry'");
+        Position<Entry<K, V>> p = treeSearch(root(), key);
+        if (isInternal(p)) // an exact match
+            return p.getElement();
+        return oneSidedAncestor(p, false); // find nearest LARGER ancestor of leaf
     }
 
     @Override
@@ -211,35 +214,21 @@ public class TreeMap<K, V> extends AbstractSortedMap<K, V> {
 
     @Override
     public Entry<K, V> higherEntry(K key) throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'higherEntry'");
+        Position<Entry<K, V>> p = treeSearch(root(), key);
+        if (isInternal(p) && isInternal(right(p))) // if p has right subtree,
+            return treeMin(right(p)).getElement(); // successor is min of that subtree
+        return oneSidedAncestor(p, false); // otherwise successor is a LARGER ancestor
     }
 
     @Override
     public Iterable<Entry<K, V>> subMap(K fromKey, K toKey) throws IllegalArgumentException {
-        ArrayList<Entry<K,V>> buffer = new ArrayList<>(size());
-        if (compare(fromKey, toKey) < 0)                             // ensure that fromKey < toKey
+        ArrayList<Entry<K, V>> buffer = new ArrayList<>(size());
+        if (compare(fromKey, toKey) < 0) // ensure that fromKey < toKey
             subMapRecurse(fromKey, toKey, root(), buffer);
         return buffer;
     }
 
     // Stubs for balanced search tree operations (subclasses can override)
-    /**
-     * Rebalances the tree after an insertion of specified position. This version of the method does not
-     * do anything, but it can be overridden by subclasses.
-     *
-     * @param p the position which was recently inserted
-     */
-    protected void rebalanceInsert(Position<Entry<K, V>> p) {}
-
-    /**
-     * Rebalances the tree after a child of specified position has been removed. This version of the
-     * method does not do anything, but it can be overridden by subclasses.
-     *
-     * @param p the position of the sibling of the removed leaf
-     */
-    protected void rebalanceDelete(Position<Entry<K, V>> p) {}
-
     /**
      * Rebalances the tree after an access of specified position. This version of the method does not do
      * anything, but it can be overridden by a subclasses.
@@ -256,19 +245,82 @@ public class TreeMap<K, V> extends AbstractSortedMap<K, V> {
                 buffer.add(p.getElement());
         return buffer;
     }
-    
+
     // UTILITIES
-    private void subMapRecurse(K fromKey, K toKey, Position<Entry<K,V>> p, ArrayList<Entry<K,V>> buffer) {
+    private void subMapRecurse(
+            K fromKey, K toKey, Position<Entry<K, V>> p, ArrayList<Entry<K, V>> buffer) {
         if (isInternal(p))
             if (compare(p.getElement(), fromKey) < 0)
                 // p's key is less than fromKey, so any relevant entries are to the right
                 subMapRecurse(fromKey, toKey, right(p), buffer);
             else {
-                subMapRecurse(fromKey, toKey, left(p), buffer);        // first consider left subtree
-                if (compare(p.getElement(), toKey) < 0) {            // p is within range
-                    buffer.add(p.getElement());                      // so add it to buffer, and consider
-                    subMapRecurse(fromKey, toKey, right(p), buffer);   // right subtree as well
+                subMapRecurse(fromKey, toKey, left(p), buffer); // first consider left subtree
+                if (compare(p.getElement(), toKey) < 0) { // p is within range
+                    buffer.add(p.getElement()); // so add it to buffer, and consider
+                    subMapRecurse(fromKey, toKey, right(p), buffer); // right subtree as well
                 }
             }
+    }
+
+    // REBALANCING LOGIC
+    private int height(Position<Entry<K, V>> position) {
+        return tree.getAux(position);
+    }
+
+    private void recomputeHeight(Position<Entry<K, V>> position) {
+        tree.setAux(position, 1 + Math.max(height(left(position)), height(right(position))));
+    }
+
+    private boolean isBalanced(Position<Entry<K, V>> position) {
+        return Math.abs(height(left(position)) - height(right(position))) <= 1;
+    }
+
+    private Position<Entry<K, V>> tallerChild(Position<Entry<K, V>> position) {
+        if (height(left(position)) > height(right(position)))
+            return left(position);
+        if (height(left(position)) < height(right(position)))
+            return right(position);
+        if (isRoot(position))
+            return left(position);
+        if (position == left(parent(position)))
+            return left(position);
+        else
+            return right(position);
+    }
+
+    private void rebalance(Position<Entry<K, V>> position) {
+        int oldHeight, newHeight;
+        do {
+            oldHeight = height(position);
+            if (!isBalanced(position)) {
+                position = restructure(tallerChild(tallerChild(position)));
+                recomputeHeight(left(position));
+                recomputeHeight(right(position));
+            }
+            recomputeHeight(position);
+            newHeight = height(position);
+            position = parent(position);
+        } while (oldHeight != newHeight && position != null);
+    }
+    
+    /**
+     * Rebalances the tree after an insertion of specified position. This version of the method does not
+     * do anything, but it can be overridden by subclasses.
+     *
+     * @param p the position which was recently inserted
+     */
+    private void rebalanceInsert(Position<Entry<K, V>> p) {
+        rebalance(p);
+    }
+
+    /**
+     * Rebalances the tree after a child of specified position has been removed. This version of the
+     * method does not do anything, but it can be overridden by subclasses.
+     *
+     * @param p the position of the sibling of the removed leaf
+     */
+    private void rebalanceDelete(Position<Entry<K, V>> p) {
+        if (!isRoot(p))
+            rebalance(parent(p));
     }
 }
