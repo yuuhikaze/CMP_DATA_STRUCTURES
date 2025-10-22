@@ -70,7 +70,7 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
      * @return position casted as node
      * @throws IllegalArgumentException when position fails the validation
      */
-    private Node<E> validate(Position<E> position) throws IllegalArgumentException {
+    protected Node<E> validate(Position<E> position) throws IllegalArgumentException {
         if (!(position instanceof Node))
             throw new IllegalArgumentException("Position must be of Node type");
         Node<E> node = (Node<E>) position; // safe cast
