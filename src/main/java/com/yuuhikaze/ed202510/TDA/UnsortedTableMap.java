@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
  */
 public class UnsortedTableMap<K, V> extends AbstractMap<K, V> {
 
-    private ArrayList<MapEntry<K, V>> table = new ArrayList<>();
+    private Vector<MapEntry<K, V>> table = new Vector<>();
 
     public UnsortedTableMap() {}
 

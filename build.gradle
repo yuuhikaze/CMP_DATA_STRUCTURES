@@ -6,7 +6,7 @@ plugins {
 group = 'com.yuuhikaze'
 version = '0.1.0'
 
-def _mainClass = 'com.yuuhikaze.ed202510.E.E02_02'
+def _mainClass = 'com.yuuhikaze.ed202510.EI.EI05.DNSCache_Main'
 
 java {
     toolchain {
