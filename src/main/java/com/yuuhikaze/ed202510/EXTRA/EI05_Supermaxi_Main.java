@@ -1,4 +1,4 @@
-package com.yuuhikaze.ed202510.EI;
+package com.yuuhikaze.ed202510.EXTRA;
 
 import com.yuuhikaze.ed202510.TDA.Vector;
 

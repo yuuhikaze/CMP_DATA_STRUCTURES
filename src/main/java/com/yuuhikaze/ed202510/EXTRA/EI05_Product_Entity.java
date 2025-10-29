@@ -1,4 +1,4 @@
-package com.yuuhikaze.ed202510.EI;
+package com.yuuhikaze.ed202510.EXTRA;
 
 /**
  * Entity class representing a product in the Supermaxi supermarket
