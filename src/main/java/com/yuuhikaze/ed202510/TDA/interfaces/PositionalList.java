@@ -1,5 +1,7 @@
 package com.yuuhikaze.ed202510.TDA.interfaces;
 
+import java.util.Iterator;
+
 /**
  * A generic interface representing a sequence of elements characterized by positions
  *
@@ -117,4 +119,7 @@ public interface PositionalList<E> extends Iterable<Position<E>> {
      * @throws IllegalArgumentException TODO
      */
     E remove(Position<E> position) throws IllegalArgumentException;
+
+    // Iterate over elements of PositionalList instead of the positions itself
+    public Iterator<E> elementIterator();
 }

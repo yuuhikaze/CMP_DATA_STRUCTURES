@@ -3,6 +3,7 @@ package com.yuuhikaze.ed202510.TDA;
 import com.yuuhikaze.ed202510.TDA.interfaces.Position;
 import com.yuuhikaze.ed202510.TDA.interfaces.PositionalList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class LinkedPositionalList<E> implements PositionalList<E> {
 
@@ -188,5 +189,36 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
                 return tmp;
             }
         };
+    }
+
+    private class ElementIterator implements Iterator<E> {
+        private Position<E> cursor = first();
+        private Position<E> recent = null;
+
+        @Override
+        public boolean hasNext() {
+            return cursor != null;
+        }
+
+        @Override
+        public E next() {
+            if (!hasNext())
+                throw new NoSuchElementException();
+            recent = cursor;
+            cursor = after(cursor);
+            return recent.getElement();
+        }
+
+        @Override
+        public void remove() {
+            if (recent == null)
+                throw new IllegalStateException();
+            LinkedPositionalList.this.remove(recent);
+            recent = null;
+        }
+    }
+
+    public Iterator<E> elementIterator() {
+        return new ElementIterator();
     }
 }

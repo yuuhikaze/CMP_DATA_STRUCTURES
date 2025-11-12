@@ -1,11 +1,7 @@
 package com.yuuhikaze.ed202510.CP;
 
 import java.util.HashMap;
-
-enum Gender {
-    Male, Female
-}
-
+import com.yuuhikaze.ed202510.enums.Gender;
 
 class Citizen {
     private String ID;

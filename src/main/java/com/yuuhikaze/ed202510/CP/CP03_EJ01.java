@@ -4,6 +4,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import com.yuuhikaze.ed202510.TDA.DLLDeque;
 import com.yuuhikaze.ed202510.utils.ANSICodes;
+import com.yuuhikaze.ed202510.enums.Gender;
 
 class Hospital {
     private final String name;
@@ -39,11 +40,6 @@ class Hospital {
             return;
         patients.removeElement(patient);
     }
-}
-
-enum Gender {
-    Male,
-    Female
 }
 
 enum IssueKind {
