@@ -60,4 +60,9 @@ public interface Map<K, V> {
      * @return iterable over entries
      */
     Iterable<Entry<K, V>> entrySet();
+
+    /**
+     * Removes all entries from the map
+     */
+    void clear();
 }

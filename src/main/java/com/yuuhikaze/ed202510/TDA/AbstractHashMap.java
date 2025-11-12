@@ -68,4 +68,10 @@ public abstract class AbstractHashMap<K, V> extends AbstractMap<K, V> {
     protected abstract V bucketPut(int h, K k, V v);
 
     protected abstract V bucketRemove(int h, K k);
+
+    @Override
+    public void clear() {
+        n = 0;
+        createTable();
+    }
 }

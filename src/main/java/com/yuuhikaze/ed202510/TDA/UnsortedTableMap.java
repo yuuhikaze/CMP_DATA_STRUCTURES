@@ -90,4 +90,9 @@ public class UnsortedTableMap<K, V> extends AbstractMap<K, V> {
     public Iterable<Entry<K, V>> entrySet() {
         return new EntryIterable();
     }
+
+    @Override
+    public void clear() {
+        table = new Vector<>();
+    }
 }
