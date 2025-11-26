@@ -4,9 +4,9 @@ import com.yuuhikaze.ed202510.TDA.AdjacencyMapGraph;
 import com.yuuhikaze.ed202510.TDA.UnsortedTableMap;
 import com.yuuhikaze.ed202510.TDA.interfaces.Edge;
 import com.yuuhikaze.ed202510.TDA.interfaces.Graph;
-import com.yuuhikaze.ed202510.TDA.interfaces.GraphTraversals;
 import com.yuuhikaze.ed202510.TDA.interfaces.Map;
 import com.yuuhikaze.ed202510.TDA.interfaces.Vertex;
+import com.yuuhikaze.ed202510.TDA.misc.GraphAlgorithms;
 import com.yuuhikaze.ed202510.TDA.interfaces.PositionalList;
 import java.util.HashSet;
 import java.util.Set;
@@ -110,7 +110,7 @@ class SocialNetworkController {
         Set<Vertex<Person>> known = new HashSet<>();
         Map<Vertex<Person>, Edge<String>> forest = new UnsortedTableMap<>();
 
-        GraphTraversals.BFS(network, startVertex, known, forest);
+        GraphAlgorithms.BFS(network, startVertex, known, forest);
 
         System.out.println("Traversal by levels:");
         displayBFSLevels(startVertex, forest);
@@ -189,9 +189,9 @@ class SocialNetworkController {
 
         Set<Vertex<Person>> known = new HashSet<>();
         Map<Vertex<Person>, Edge<String>> forest = new UnsortedTableMap<>();
-        GraphTraversals.BFS(network, from, known, forest);
+        GraphAlgorithms.BFS(network, from, known, forest);
 
-        PositionalList<Edge<String>> path = GraphTraversals.constructPath(network, from, to, forest);
+        PositionalList<Edge<String>> path = GraphAlgorithms.constructPath(network, from, to, forest);
 
         System.out.println("\n=== Path from " + fromName + " to " + toName + " ===");
         if (path.isEmpty()) {
@@ -213,7 +213,7 @@ class SocialNetworkController {
         System.out.println("\n=== Complete DFS (Full Forest) ===");
         System.out.println("Running DFS on all connected components...\n");
 
-        Map<Vertex<Person>, Edge<String>> forest = GraphTraversals.DFSComplete(network);
+        Map<Vertex<Person>, Edge<String>> forest = GraphAlgorithms.DFSComplete(network);
 
         Set<Vertex<Person>> roots = new HashSet<>();
         for (Vertex<Person> v : network.vertices()) {

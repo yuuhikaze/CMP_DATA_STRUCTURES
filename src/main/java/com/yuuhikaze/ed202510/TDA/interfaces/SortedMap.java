@@ -1,6 +1,4 @@
-package com.yuuhikaze.ed202510.TDA;
-
-import com.yuuhikaze.ed202510.TDA.interfaces.Entry;
+package com.yuuhikaze.ed202510.TDA.interfaces;
 
 /**
  * A map with additional support for keys from a total ordering.

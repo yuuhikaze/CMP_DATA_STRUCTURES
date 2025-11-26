@@ -1,6 +1,7 @@
 package com.yuuhikaze.ed202510.TDA;
 import java.util.Comparator;
 import com.yuuhikaze.ed202510.TDA.interfaces.Entry;
+import com.yuuhikaze.ed202510.TDA.interfaces.SortedMap;
 
 /**
  * An abstract base class to ease the implementation of the SortedMap interface.

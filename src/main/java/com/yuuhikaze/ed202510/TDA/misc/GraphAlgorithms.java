@@ -1,4 +1,4 @@
-package com.yuuhikaze.ed202510.TDA.interfaces;
+package com.yuuhikaze.ed202510.TDA.misc;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,9 +6,16 @@ import com.yuuhikaze.ed202510.TDA.HeapAdaptablePriorityQueue;
 import com.yuuhikaze.ed202510.TDA.LinkedPositionalList;
 import com.yuuhikaze.ed202510.TDA.ProbeHashMap;
 import com.yuuhikaze.ed202510.TDA.UnsortedTableMap;
+import com.yuuhikaze.ed202510.TDA.interfaces.AdaptablePriorityQueue;
+import com.yuuhikaze.ed202510.TDA.interfaces.Edge;
+import com.yuuhikaze.ed202510.TDA.interfaces.Entry;
+import com.yuuhikaze.ed202510.TDA.interfaces.Graph;
+import com.yuuhikaze.ed202510.TDA.interfaces.Map;
+import com.yuuhikaze.ed202510.TDA.interfaces.PositionalList;
+import com.yuuhikaze.ed202510.TDA.interfaces.Vertex;
 import com.yuuhikaze.ed202510.utils.IterUtils;
 
-public class GraphTraversals<V, E> {
+public class GraphAlgorithms<V, E> {
 
     public static <V, E> void DFS(
             Graph<V, E> graph, Vertex<V> u, Set<Vertex<V>> known, Map<Vertex<V>, Edge<E>> forest) {

@@ -1,4 +1,4 @@
-package com.yuuhikaze.ed202510.TDA.helpers;
+package com.yuuhikaze.ed202510.TDA.misc;
 
 import java.util.Comparator;
 
