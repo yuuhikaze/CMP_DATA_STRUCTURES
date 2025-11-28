@@ -43,3 +43,8 @@ bin/
 
 ## Reports ###
 *.tex
+
+## Misc ##
+/CP-PDFs
+ENTRYPOINT.txt
+/DSAJ
