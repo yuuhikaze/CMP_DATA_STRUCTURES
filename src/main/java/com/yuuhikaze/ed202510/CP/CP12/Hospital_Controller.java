@@ -71,7 +71,7 @@ class HospitalController {
         System.out.println("\n=== Fastest Route: " + fromName + " → " + toName + " ===");
 
         // Use Dijkstra's algorithm
-        Map<Vertex<Room>, Integer> distances = GraphAlgorithms.shortestPathLengths(
+        Map<Vertex<Room>, Integer> distances = GraphAlgorithms.shortestPathDistances(
             corridorNetwork, from);
 
         Integer totalTime = distances.get(to);
@@ -83,43 +83,20 @@ class HospitalController {
 
         System.out.println("Shortest travel time: " + totalTime + " seconds");
 
-        // Reconstruct path
-        reconstructPath(from, to, distances);
-    }
+        // Reconstruct path using shortest path tree
+        Map<Vertex<Room>, Edge<Integer>> tree = GraphAlgorithms.shortestPathTree(
+            corridorNetwork, from, distances);
 
-    private void reconstructPath(Vertex<Room> from, Vertex<Room> to,
-                                 Map<Vertex<Room>, Integer> distances) {
-        PositionalList<Vertex<Room>> path = new LinkedPositionalList<>();
-        Vertex<Room> current = to;
-        path.addFirst(current);
-
-        while (current != from) {
-            int currentDist = distances.get(current);
-            boolean found = false;
-
-            for (Edge<Integer> e : corridorNetwork.incomingEdges(current)) {
-                Vertex<Room> prev = corridorNetwork.opposite(current, e);
-                int prevDist = distances.get(prev);
-
-                if (prevDist + e.getElement() == currentDist) {
-                    path.addFirst(prev);
-                    current = prev;
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) break;
-        }
+        PositionalList<Edge<Integer>> path = GraphAlgorithms.constructPath(
+            corridorNetwork, from, to, tree);
 
         // Display path
-        System.out.print("Route: ");
-        boolean first = true;
-        for (Position<Vertex<Room>> pos = path.first();
-             pos != null; pos = path.after(pos)) {
-            if (!first) System.out.print(" → ");
-            System.out.print(pos.getElement().getElement().getName());
-            first = false;
+        System.out.print("Route: " + fromName);
+        Vertex<Room> current = from;
+        for (Position<Edge<Integer>> pos = path.first(); pos != null; pos = path.after(pos)) {
+            Edge<Integer> edge = pos.getElement();
+            current = corridorNetwork.opposite(current, edge);
+            System.out.print(" → " + current.getElement().getName());
         }
         System.out.println();
     }
@@ -134,7 +111,7 @@ class HospitalController {
         System.out.println("\n=== Complete Tour from " + startName + " ===");
 
         // Calculate shortest paths from start to all rooms
-        Map<Vertex<Room>, Integer> distances = GraphAlgorithms.shortestPathLengths(
+        Map<Vertex<Room>, Integer> distances = GraphAlgorithms.shortestPathDistances(
             corridorNetwork, start);
 
         int totalTime = 0;
@@ -177,12 +154,12 @@ class HospitalController {
         System.out.println("\n=== Round Trip: " + startName + " → " + viaName + " → " + startName + " ===");
 
         // Find path from start to via
-        Map<Vertex<Room>, Integer> distancesFrom = GraphAlgorithms.shortestPathLengths(
+        Map<Vertex<Room>, Integer> distancesFrom = GraphAlgorithms.shortestPathDistances(
             corridorNetwork, start);
         Integer timeToVia = distancesFrom.get(via);
 
         // Find path from via back to start
-        Map<Vertex<Room>, Integer> distancesBack = GraphAlgorithms.shortestPathLengths(
+        Map<Vertex<Room>, Integer> distancesBack = GraphAlgorithms.shortestPathDistances(
             corridorNetwork, via);
         Integer timeBack = distancesBack.get(start);
 
@@ -205,27 +182,19 @@ class HospitalController {
         }
 
         System.out.println("\n=== DFS Traversal from " + startName + " ===");
-        System.out.print("Visit order: ");
 
         Set<Vertex<Room>> known = new HashSet<>();
         Map<Vertex<Room>, Edge<Integer>> forest = new UnsortedTableMap<>();
 
-        dfsWithPrint(start, known, forest);
-        System.out.println();
-    }
+        GraphAlgorithms.DFS(corridorNetwork, start, known, forest);
 
-    private void dfsWithPrint(Vertex<Room> u, Set<Vertex<Room>> known,
-                             Map<Vertex<Room>, Edge<Integer>> forest) {
-        known.add(u);
-        System.out.print(u.getElement().getName() + " ");
-
-        for (Edge<Integer> e : corridorNetwork.outgoingEdges(u)) {
-            Vertex<Room> v = corridorNetwork.opposite(u, e);
-            if (!known.contains(v)) {
-                forest.put(v, e);
-                dfsWithPrint(v, known, forest);
+        System.out.print("Visit order: " + startName);
+        for (Vertex<Room> v : corridorNetwork.vertices()) {
+            if (v != start && forest.get(v) != null) {
+                System.out.print(" " + v.getElement().getName());
             }
         }
+        System.out.println();
     }
 
     public void bfsTraversal(String startName) {

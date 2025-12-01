@@ -135,7 +135,16 @@ public class GraphTraversal_Main {
         Set<Vertex<String>> known = new HashSet<>();
         Map<Vertex<String>, Edge<Integer>> forest = new UnsortedTableMap<>();
 
-        dfsWithPrint(graph, start, known, forest);
+        GraphAlgorithms.DFS(graph, start, known, forest);
+
+        // Print traversal sequence
+        System.out.print("Sequence: " + start.getElement());
+        for (Vertex<String> v : graph.vertices()) {
+            if (v != start && forest.get(v) != null) {
+                System.out.print(" " + v.getElement());
+            }
+        }
+        System.out.println();
 
         System.out.println("\nDFS Tree edges:");
         for (Vertex<String> v : graph.vertices()) {
@@ -143,20 +152,6 @@ public class GraphTraversal_Main {
             if (edge != null) {
                 Vertex<String> parent = graph.opposite(v, edge);
                 System.out.println("  " + parent.getElement() + " -> " + v.getElement());
-            }
-        }
-    }
-
-    private static void dfsWithPrint(Graph<String, Integer> graph, Vertex<String> u,
-                                    Set<Vertex<String>> known, Map<Vertex<String>, Edge<Integer>> forest) {
-        known.add(u);
-        System.out.print(u.getElement() + " ");
-
-        for (Edge<Integer> e : graph.outgoingEdges(u)) {
-            Vertex<String> v = graph.opposite(u, e);
-            if (!known.contains(v)) {
-                forest.put(v, e);
-                dfsWithPrint(graph, v, known, forest);
             }
         }
     }

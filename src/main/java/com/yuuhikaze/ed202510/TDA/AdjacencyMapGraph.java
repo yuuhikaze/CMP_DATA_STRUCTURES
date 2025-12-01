@@ -49,6 +49,11 @@ public class AdjacencyMapGraph<V, E> implements Graph<V, E> {
         public boolean validate(Graph<V, E> graph) {
             return AdjacencyMapGraph.this == graph && position != null;
         }
+
+        @Override
+        public String toString() {
+            return String.valueOf(element);
+        }
     }
 
     @SuppressWarnings("hiding")
@@ -83,6 +88,11 @@ public class AdjacencyMapGraph<V, E> implements Graph<V, E> {
 
         public boolean validate(Graph<V, E> graph) {
             return AdjacencyMapGraph.this == graph && position != null;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(element);
         }
     }
 
