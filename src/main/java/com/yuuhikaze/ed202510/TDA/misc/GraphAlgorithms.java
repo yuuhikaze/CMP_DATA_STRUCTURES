@@ -6,12 +6,14 @@ import com.yuuhikaze.ed202510.TDA.HeapAdaptablePriorityQueue;
 import com.yuuhikaze.ed202510.TDA.LinkedPositionalList;
 import com.yuuhikaze.ed202510.TDA.ProbeHashMap;
 import com.yuuhikaze.ed202510.TDA.UnsortedTableMap;
+import com.yuuhikaze.ed202510.TDA.SLLStack;
 import com.yuuhikaze.ed202510.TDA.interfaces.AdaptablePriorityQueue;
 import com.yuuhikaze.ed202510.TDA.interfaces.Edge;
 import com.yuuhikaze.ed202510.TDA.interfaces.Entry;
 import com.yuuhikaze.ed202510.TDA.interfaces.Graph;
 import com.yuuhikaze.ed202510.TDA.interfaces.Map;
 import com.yuuhikaze.ed202510.TDA.interfaces.PositionalList;
+import com.yuuhikaze.ed202510.TDA.interfaces.Stack;
 import com.yuuhikaze.ed202510.TDA.interfaces.Vertex;
 import com.yuuhikaze.ed202510.utils.IterUtils;
 
@@ -110,5 +112,92 @@ public class GraphAlgorithms<V, E> {
             }
         }
         return cloud;
+    }
+
+    /**
+     * Returns a list of vertices of directed acyclic graph g in topological order.
+     * If graph g has a cycle, the result will be incomplete.
+     */
+    public static <V, E> PositionalList<Vertex<V>> topologicalSort(Graph<V, E> g) {
+        PositionalList<Vertex<V>> topo = new LinkedPositionalList<>();
+        Stack<Vertex<V>> ready = new SLLStack<>();
+        Map<Vertex<V>, Integer> inCount = new UnsortedTableMap<>();
+
+        for (Vertex<V> u : g.vertices()) {
+            inCount.put(u, g.inDegree(u));
+            if (inCount.get(u) == 0) {
+                ready.push(u);
+            }
+        }
+
+        while (!ready.isEmpty()) {
+            Vertex<V> u = ready.pop();
+            topo.addLast(u);
+            for (Edge<E> e : g.outgoingEdges(u)) {
+                Vertex<V> v = g.opposite(u, e);
+                inCount.put(v, inCount.get(v) - 1);
+                if (inCount.get(v) == 0) {
+                    ready.push(v);
+                }
+            }
+        }
+
+        return topo;
+    }
+
+    /**
+     * Checks if a directed graph is a DAG (Directed Acyclic Graph).
+     * Returns true if the graph has no cycles, false otherwise.
+     */
+    public static <V, E> boolean isDAG(Graph<V, E> g) {
+        PositionalList<Vertex<V>> topo = topologicalSort(g);
+        return topo.size() == g.numVertices();
+    }
+
+    /**
+     * Converts graph g into its transitive closure using Floyd-Warshall algorithm.
+     */
+    public static <V, E> void transitiveClosure(Graph<V, E> g) {
+        for (Vertex<V> k : g.vertices()) {
+            for (Vertex<V> i : g.vertices()) {
+                if (i != k && g.getEdge(i, k) != null) {
+                    for (Vertex<V> j : g.vertices()) {
+                        if (i != j && j != k && g.getEdge(k, j) != null) {
+                            if (g.getEdge(i, j) == null) {
+                                g.insertEdge(i, j, null);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates a copy of the transitive closure of graph g.
+     * Returns a new graph that is the transitive closure.
+     */
+    public static <V, E> Graph<V, E> computeTransitiveClosure(Graph<V, E> g) {
+        Graph<V, E> closure = new com.yuuhikaze.ed202510.TDA.AdjacencyMapGraph<>(true);
+        Map<Vertex<V>, Vertex<V>> vertexMap = new UnsortedTableMap<>();
+
+        // Copy all vertices
+        for (Vertex<V> v : g.vertices()) {
+            Vertex<V> newV = closure.insertVertex(v.getElement());
+            vertexMap.put(v, newV);
+        }
+
+        // Copy all edges
+        for (Edge<E> e : g.edges()) {
+            Vertex<V>[] endpoints = g.endVertices(e);
+            Vertex<V> u = vertexMap.get(endpoints[0]);
+            Vertex<V> v = vertexMap.get(endpoints[1]);
+            closure.insertEdge(u, v, e.getElement());
+        }
+
+        // Compute transitive closure
+        transitiveClosure(closure);
+
+        return closure;
     }
 }
